@@ -15,6 +15,7 @@ import com.francium.app.projectf.Configuration.E_SCENARIO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -69,6 +70,9 @@ public class GameEngine {
     public static boolean mIsAutoTip = false;
 
     public static boolean mUpdatePeer = false;
+    public static boolean mFinalScore = false;
+
+    static private Random randomGenerator = new Random(System.currentTimeMillis());
 
     ArrayList<EventAction> mActionEventList = new ArrayList<EventAction>();
 
@@ -91,10 +95,13 @@ public class GameEngine {
         mEffect = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
         mDisappearToken = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
         mToken = new TokenHandler();
-        init();
+        init((int)System.currentTimeMillis());
     }
 
-    public static void init() {
+    public static void init(long seed) {
+        initRandom(seed);
+        mScoreHandler.init();
+        mTimeHandler.reset();
         previousExchangeCol1 = 0;
         previousExchangeRow1 = 0;
         previousExchangeCol2 = 0;
@@ -123,9 +130,17 @@ public class GameEngine {
         mToken.freeToken(token);
     }
 
+    static void initRandom(long seed) {
+        randomGenerator = new Random(seed);
+    }
+
     static int getRandom() {
-        int data = (int) (Math.random() * 100);
-        return (data % 7) + 1;
+//        int data = (int) (Math.random() * 100);
+//        randomGenerator = new Random(System.currentTimeMillis());
+//        Log.d("DEBUG", "get random");
+        int data = randomGenerator.nextInt(7) + 1;
+//        return (data % 7) + 1;
+        return data;
     }
 
     static boolean isInLineX(int pic[][], int col, int row) {
@@ -496,7 +511,7 @@ public class GameEngine {
                 }
             }
         }
-        init();
+        init((int)System.currentTimeMillis());
         Message msg = new Message();
         msg.what = GameEngine.FILL_END;
         GameEngine.mHandler.sendMessage(msg);
@@ -824,6 +839,8 @@ public class GameEngine {
                     genSpecialBugItem();
                     break;
                 case GAME_OVER: {
+                    mScoreHandler.setFinalOwnScore(mScoreHandler.getOwnScore());
+                    mFinalScore = true;
                     mScene = E_SCENARIO.RESULT;
                     break;
                 }
@@ -847,39 +864,42 @@ public class GameEngine {
     }
 
     public void drawResultScene(GL10 gl) {
+        String score = "----";
+        String result = "Wait...";
+        int resultColor = Color.BLACK;
         if (MainActivity.mMultiplayer) {
-            if (mScoreHandler.getPeerScore() > mScoreHandler.getScore()){
+            if (mScoreHandler.getFinalPeerScore() != 0) {
+                score = Integer.toString(mScoreHandler.getFinalPeerScore());
+                if (mScoreHandler.getFinalPeerScore() > mScoreHandler.getFinalOwnScore()) {
+                    result = "LOSE";
+                    resultColor = Color.GRAY;
+                }
+                else {
+                    result = "WIN!";
+                    resultColor = Color.RED;
+                }
                 drawString.draw(gl,
-                        "LOSE" ,
+                        result,
                         120,
                         40,
                         -50,
-                        Color.GRAY
+                        resultColor
                 );
-            }
-            else {
                 drawString.draw(gl,
-                        "WIN" ,
-                        120,
+                        "OPPONENT:" ,
+                        60,
                         40,
-                        -50,
-                        Color.RED
+                        -30,
+                        Color.BLACK
+                );
+                drawString.draw(gl,
+                        score,
+                        60,
+                        40,
+                        -20,
+                        Color.BLACK
                 );
             }
-            drawString.draw(gl,
-                    "OPPONENT:" ,
-                    60,
-                    40,
-                    -30,
-                    Color.BLACK
-            );
-            drawString.draw(gl,
-                    Integer.toString(mScoreHandler.getPeerScore()),
-                    60,
-                    40,
-                    -20,
-                    Color.BLACK
-            );
             drawString.draw(gl,
                     "YOU:",
                     60,
@@ -888,7 +908,7 @@ public class GameEngine {
                     Color.BLACK
             );
             drawString.draw(gl,
-                    Integer.toString(mScoreHandler.getScore()),
+                    Integer.toString(mScoreHandler.getFinalOwnScore()),
                     60,
                     40,
                     10,
@@ -904,7 +924,7 @@ public class GameEngine {
                     Color.BLACK
             );
             drawString.draw(gl,
-                    Integer.toString(mScoreHandler.getScore()),
+                    Integer.toString(mScoreHandler.getFinalOwnScore()),
                     60,
                     40,
                     0,
@@ -925,7 +945,7 @@ public class GameEngine {
             );
         }
         drawString.draw(gl,
-                "You: " + Integer.toString(mScoreHandler.getScore()),
+                "You: " + Integer.toString(mScoreHandler.getOwnScore()),
                 32,
                 40,
                 64,

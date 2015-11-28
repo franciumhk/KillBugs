@@ -92,6 +92,7 @@
 
     <style name="MainScreenButton" parent="@style/GameButton">
         <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_width">150dp</item>
     </style>
 
     <style name="MainScreenButtonBlurb" parent="@style/GameBlurb">

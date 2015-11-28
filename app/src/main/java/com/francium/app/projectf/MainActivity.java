@@ -1,6 +1,7 @@
 package com.francium.app.projectf;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -39,25 +41,6 @@ import java.util.Set;
 
 import static java.lang.System.arraycopy;
 
-//public class MainActivity extends AppCompatActivity {
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-////        Intent intent = new Intent(this, GameActivity.class);
-////        startActivity(intent);
-////        finish();
-//    }
-//
-//    public void gameStartOnClick(View view) {
-//        Intent intent = new Intent(this, GameActivity.class);
-//        startActivity(intent);
-//    }
-//
-//}
-
 public class MainActivity extends Activity
         implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -66,7 +49,6 @@ public class MainActivity extends Activity
         RoomStatusUpdateListener,
         RoomUpdateListener,
         OnInvitationReceivedListener {
-
 
     public Thread mThread = new Thread();
     GameGLSurfaceView mGLSurfaceView;
@@ -87,6 +69,11 @@ public class MainActivity extends Activity
 
     // Request code used to invoke sign in user interactions.
     private static final int RC_SIGN_IN = 9001;
+    private static final int RC_RESOLVE = 5000;
+    private static final int RC_UNUSED = 5001;
+
+    // playing on hard mode?
+    boolean mHardMode = false;
 
     // Client used to interact with Google APIs.
     private GoogleApiClient mGoogleApiClient;
@@ -123,6 +110,10 @@ public class MainActivity extends Activity
 
     static boolean isGameRunning = false;
 
+    // achievements and scores we're pending to push to the cloud
+    // (waiting for the user to sign in, for instance)
+    AccomplishmentsOutbox mOutbox = new AccomplishmentsOutbox();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,25 +131,24 @@ public class MainActivity extends Activity
             findViewById(id).setOnClickListener(this);
         }
 
-        //TODO
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         mGLSurfaceView = (GameGLSurfaceView) findViewById(R.id.glSurfaceViewID);
         Log.d("DEBUG", "mGLSurfaceView: " + mGLSurfaceView);
-//        setContentView(mGLSurfaceView);
+
         mGLSurfaceView.requestFocus();
         mGLSurfaceView.setFocusableInTouchMode(true);
 
-        GameEngine.mScoreHandler.init();
-        GameEngine.mTimeHandler.reset();
-        GameEngine.init();
+//        GameEngine.mScoreHandler.init();
+//        GameEngine.mTimeHandler.reset();
+//        GameEngine.init(0);
     }
 
     @Override
     public void onClick(View v) {
         Intent intent;
+        Log.d(TAG, "onClick");
 
         switch (v.getId()) {
             case R.id.button_single_player:
@@ -213,6 +203,14 @@ public class MainActivity extends Activity
             case R.id.button_quick_game:
                 // user wants to play against a random opponent right now
                 startQuickGame();
+                break;
+            case R.id.button_show_achievements:
+                Log.d(TAG, "onShowAchievementsRequested");
+                onShowAchievementsRequested();
+                break;
+            case R.id.button_show_leaderboards:
+                Log.d(TAG, "onShowLeaderboardsRequested");
+                onShowLeaderboardsRequested();
                 break;
         }
     }
@@ -493,6 +491,12 @@ public class MainActivity extends Activity
         }
         switchToMainScreen();
 
+        // if we have accomplishments to push, push them
+        if (!mOutbox.isEmpty()) {
+            pushAccomplishments();
+            Toast.makeText(this, getString(R.string.your_progress_will_be_uploaded),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -657,8 +661,7 @@ public class MainActivity extends Activity
             mParticipants = room.getParticipants();
         }
         if (mParticipants != null) {
-//            updatePeerScoresDisplay();
-            updatePeerScores();
+            updatePeerScores(false);
         }
     }
 
@@ -669,27 +672,23 @@ public class MainActivity extends Activity
     // Current state of the game:
     int mSecondsLeft = -1; // how long until the game ends (seconds)
     final static int GAME_DURATION = 20; // game duration, seconds.
-//    int mScore = 0; // user's current score
 
     // Reset game variables in preparation for a new game.
     void resetGameVars() {
         mSecondsLeft = GAME_DURATION;
         mParticipantScore.clear();
         mFinishedParticipants.clear();
-        GameEngine.mScoreHandler.setPeerScore(0);
-        GameEngine.mScoreHandler.setScore(0);
     }
 
     // Start the gameplay phase of the game.
     void startGame(final boolean multiplayer) {
         Log.d(TAG, "startGame");
         mMultiplayer = multiplayer;
-        updatePeerScores();
+        updatePeerScores(false);
         broadcastScore(false);
+        Log.d(TAG, "mRoomId: " + mRoomId);
 
-        GameEngine.mScoreHandler.init();
-        GameEngine.mTimeHandler.reset();
-        GameEngine.init();
+        GameEngine.init(0);
 
         Message msg = new Message();
         msg.what = GameEngine.GAME_START;
@@ -707,6 +706,12 @@ public class MainActivity extends Activity
                             GameEngine.mUpdatePeer = false;
                             broadcastScore(false);
                             Log.d(STAG, "broadcastScore");
+                        }
+                        if (GameEngine.mFinalScore == true) {
+                            GameEngine.mFinalScore = false;
+                            broadcastScore(true);
+                            submitScore(GameEngine.mScoreHandler.getFinalOwnScore());
+                            Log.d(STAG, "broadcastFinalScore");
                         }
                         Thread.sleep(Configuration.DELAY_MS);
                     } catch (Exception e) {
@@ -791,11 +796,12 @@ public class MainActivity extends Activity
             }
 
             // update the scores on the screen
-            updatePeerScores();
+            updatePeerScores(false);
 
             // if it's a final score, mark this participant as having finished
             // the game
             if ((char) buf[0] == 'F') {
+                updatePeerScores(true);
                 mFinishedParticipants.add(rtm.getSenderParticipantId());
             }
         }
@@ -810,7 +816,14 @@ public class MainActivity extends Activity
         mMsgBuf[0] = (byte) (finalScore ? 'F' : 'U');
 
         // Second byte is the score.
-        int score = GameEngine.mScoreHandler.getScore();
+        int score;
+        if (finalScore == true) {
+            score = GameEngine.mScoreHandler.getFinalOwnScore();
+        }
+        else {
+            score = GameEngine.mScoreHandler.getOwnScore();
+        }
+
         Log.d(STAG, "broadcastScore dec: " + score);
         byte[] tmp = leIntToByteArray(score);
         arraycopy(tmp, 0, mMsgBuf, 1, 4);
@@ -847,7 +860,9 @@ public class MainActivity extends Activity
             R.id.button_quick_game, R.id.button_see_invitations, R.id.button_sign_in,
             R.id.button_sign_out,
             R.id.button_single_player,
-            R.id.button_single_player_2
+            R.id.button_single_player_2,
+            R.id.button_show_achievements,
+            R.id.button_show_leaderboards
     };
 
     // This array lists all the individual screens our game has.
@@ -890,16 +905,7 @@ public class MainActivity extends Activity
         }
     }
 
-    // formats a score as a three-digit number
-    String formatScore(int i) {
-        if (i < 0)
-            i = 0;
-        String s = String.valueOf(i);
-        return s.length() == 1 ? "00" + s : s.length() == 2 ? "0" + s : s;
-    }
-
-    void updatePeerScores() {
-        int i = 0;
+    void updatePeerScores(boolean isFinal) {
         if (mRoomId != null) {
             for (Participant p : mParticipants) {
                 String pid = p.getParticipantId();
@@ -909,8 +915,12 @@ public class MainActivity extends Activity
                     continue;
                 int score = mParticipantScore.containsKey(pid) ? mParticipantScore.get(pid) : 0;
                 Log.d(STAG, "setPeerScore: " + score);
-                GameEngine.mScoreHandler.setPeerScore(score);
-                ++i;
+                if (isFinal == true) {
+                    GameEngine.mScoreHandler.setFinalPeerScore(score);
+                }
+                else {
+                    GameEngine.mScoreHandler.setPeerScore(score);
+                }
             }
         }
     }
@@ -918,8 +928,6 @@ public class MainActivity extends Activity
     /*
      * MISC SECTION. Miscellaneous methods.
      */
-
-
     // Sets the flag to keep this screen on. It's recommended to do that during
     // the
     // handshake when setting up a game, because if the screen turns off, the
@@ -933,4 +941,153 @@ public class MainActivity extends Activity
     void stopKeepingScreenOn() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+
+    //======================================================================================================
+
+    private boolean isSignedIn() {
+        return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+    }
+
+    public void onShowAchievementsRequested() {
+        if (isSignedIn()) {
+            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient),
+                    RC_UNUSED);
+        } else {
+            BaseGameUtils.makeSimpleDialog(this, getString(R.string.achievements_not_available)).show();
+        }
+    }
+
+    public void onShowLeaderboardsRequested() {
+        if (isSignedIn()) {
+            startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient),
+                    RC_UNUSED);
+        } else {
+            BaseGameUtils.makeSimpleDialog(this, getString(R.string.leaderboards_not_available)).show();
+        }
+    }
+
+    public void submitScore(int score) {
+        // check for achievements
+        checkForAchievements(score);
+
+        // update leaderboards
+        updateLeaderboards(score);
+
+        // push those accomplishments to the cloud, if signed in
+        pushAccomplishments();
+    }
+
+    /**
+     * Check for achievements and unlock the appropriate ones.
+     *
+     * @param score the score the user requested.
+     */
+    void checkForAchievements(int score) {
+        // Check if each condition is met; if so, unlock the corresponding
+        // achievement.
+        if (score >= 1000) {
+            mOutbox.mLevel1Achievement = true;
+        }
+        if (score >= 2000) {
+            mOutbox.mLevel2Achievement = true;
+        }
+        if (score >= 3000) {
+            mOutbox.mLevel3Achievement = true;
+        }
+        if (score >= 4000) {
+            mOutbox.mLevel4Achievement = true;
+        }
+        if (score >= 5000) {
+            mOutbox.mLevel5Achievement = true;
+        }
+        if (score >= 6000) {
+            mOutbox.mLevel6Achievement = true;
+        }
+    }
+
+    void pushAccomplishments() {
+        if (!isSignedIn()) {
+            // can't push to the cloud, so save locally
+            mOutbox.saveLocal(this);
+            return;
+        }
+        if (mOutbox.mLevel1Achievement) {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_1));
+            mOutbox.mLevel1Achievement = false;
+        }
+        if (mOutbox.mLevel2Achievement) {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_2));
+            mOutbox.mLevel2Achievement = false;
+        }
+        if (mOutbox.mLevel3Achievement) {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_3));
+            mOutbox.mLevel3Achievement = false;
+        }
+        if (mOutbox.mLevel4Achievement) {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_4));
+            mOutbox.mLevel4Achievement = false;
+        }
+        if (mOutbox.mLevel5Achievement) {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_5));
+            mOutbox.mLevel5Achievement = false;
+        }
+        if (mOutbox.mLevel6Achievement) {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_6));
+            mOutbox.mLevel6Achievement = false;
+        }
+        if (mOutbox.mEasyModeScore >= 0) {
+            Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_id_easy),
+                    mOutbox.mEasyModeScore);
+            mOutbox.mEasyModeScore = -1;
+        }
+        if (mOutbox.mHardModeScore >= 0) {
+            Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_id_hard),
+                    mOutbox.mHardModeScore);
+            mOutbox.mHardModeScore = -1;
+        }
+        mOutbox.saveLocal(this);
+    }
+
+    /**
+     * Update leaderboards with the user's score.
+     *
+     * @param finalScore The score the user got.
+     */
+    void updateLeaderboards(int finalScore) {
+        if (mHardMode && mOutbox.mHardModeScore < finalScore) {
+            mOutbox.mHardModeScore = finalScore;
+        } else if (!mHardMode && mOutbox.mEasyModeScore < finalScore) {
+            mOutbox.mEasyModeScore = finalScore;
+        }
+    }
+
+    class AccomplishmentsOutbox {
+        boolean mLevel1Achievement = false;
+        boolean mLevel2Achievement = false;
+        boolean mLevel3Achievement = false;
+        boolean mLevel4Achievement = false;
+        boolean mLevel5Achievement = false;
+        boolean mLevel6Achievement = false;
+        int mEasyModeScore = -1;
+        int mHardModeScore = -1;
+
+        boolean isEmpty() {
+            return !mLevel1Achievement && !mLevel3Achievement && !mLevel4Achievement &&
+                    !mLevel2Achievement && !mLevel5Achievement && !mLevel6Achievement && mEasyModeScore < 0 &&
+                    mHardModeScore < 0;
+        }
+
+        public void saveLocal(Context ctx) {
+            /* TODO: This is left as an exercise. To make it more difficult to cheat,
+             * this data should be stored in an encrypted file! And remember not to
+             * expose your encryption key (obfuscate it by building it from bits and
+             * pieces and/or XORing with another string, for instance). */
+        }
+
+        public void loadLocal(Context ctx) {
+            /* TODO: This is left as an exercise. Write code here that loads data
+             * from the file you wrote in saveLocal(). */
+        }
+    }
+
 }

@@ -3,12 +3,17 @@ package com.francium.app.projectf;
 import android.os.Message;
 
 public class ScoreHandler {
-    int mTotalScore = 0;
+    int mOwnScore = 0;
     int mPeerScore = 0;
     int mAwardScore = 0;
+
+    int mFinalPeerScore = 0;
+    int mFinalOwnScore = 0;
+
     float mAwardRatio = 0;
     int mContinueCnt = 0;
     int mComboCnt = 0;
+
     int mOver3 = 0;
     public static boolean isScoreUpdated = false;
 
@@ -17,11 +22,18 @@ public class ScoreHandler {
     }
 
     public void init() {
-        mTotalScore = 0;
+        mOwnScore = 0;
+        mPeerScore = 0;
         mAwardScore = 0;
+
+        mFinalPeerScore = 0;
+        mFinalOwnScore = 0;
+
         mAwardRatio = 0;
         mContinueCnt = 0;
         mComboCnt = 0;
+
+        mOver3 = 0;
     }
 
     public void award(int clearNum) {
@@ -66,7 +78,7 @@ public class ScoreHandler {
 
     public void awardScore(double score) {
         mAwardScore = (int) score;
-        mTotalScore += (int) score;
+        mOwnScore += (int) score;
         isScoreUpdated = true;
     }
 
@@ -74,16 +86,33 @@ public class ScoreHandler {
         mPeerScore = score;
     }
 
-    public void setScore(int score){
-        mTotalScore = score;
+    public void setOwnScore(int score){
+        mOwnScore = score;
     }
 
     public int getPeerScore(){
         return mPeerScore;
     }
 
-    public int getScore() {
-        return mTotalScore;
+    public int getOwnScore() {
+        return mOwnScore;
+    }
+
+
+    public void setFinalPeerScore(int score){
+        mFinalPeerScore = score;
+    }
+
+    public void setFinalOwnScore(int score){
+        mFinalOwnScore = score;
+    }
+
+    public int getFinalPeerScore(){
+        return mFinalPeerScore;
+    }
+
+    public int getFinalOwnScore() {
+        return mFinalOwnScore;
     }
 
     public int getAward() {

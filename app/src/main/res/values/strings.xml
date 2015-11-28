@@ -29,4 +29,17 @@
     <string name="click_me">Click me!</string>
     <string name="is_inviting_you">is challenging you to a game!</string>
     <string name="signin_other_error">There was an issue with sign in. Please try again later.</string>
+
+
+    <string name="your_progress_will_be_uploaded">Your existing achievements and score will be uploaded shortly.</string>
+    <string name="show_achievements">Achievements</string>
+    <string name="show_leaderboards">Leaderboards</string>
+    <string name="achievements_not_available">Please sign in to view achievements.</string>
+    <string name="leaderboards_not_available">Please sign in to view leaderboards.</string>
+    <string name="achievement_level_1">Level 1</string>
+    <string name="achievement_level_2">Level 2</string>
+    <string name="achievement_level_3">Level 3</string>
+    <string name="achievement_level_4">Level 4</string>
+    <string name="achievement_level_5">Level 5</string>
+    <string name="achievement_level_6">Level 6</string>
 </resources>

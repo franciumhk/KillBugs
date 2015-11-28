@@ -32,9 +32,9 @@ public class GameActivity extends AppCompatActivity {
     protected void onStart() {
         Log.d("DEBUG", "onStart");
         super.onStart();
-        GameEngine.mScoreHandler.init();
-        GameEngine.mTimeHandler.reset();
-        GameEngine.init();
+//        GameEngine.mScoreHandler.init();
+//        GameEngine.mTimeHandler.reset();
+//        GameEngine.init(0);
 //        if (mp == null) {
 //            mp = MediaPlayer.create(this, R.raw.s_background);
 //            mp.setLooping(true);

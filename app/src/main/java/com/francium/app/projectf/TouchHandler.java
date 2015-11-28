@@ -6,8 +6,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.francium.app.projectf.Configuration.E_SCENARIO;
-
 public class TouchHandler {
     Context mContext;
 
@@ -37,15 +35,6 @@ public class TouchHandler {
         mHeight = height;
         mStep = (int) (width / Configuration.GRID_NUM);
         mYStart = (mHeight - mWidth) / 2;
-    }
-
-    public boolean touchMenuView(MotionEvent e) {
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_UP:
-                raiseTouchMenuViewEvent();
-                break;
-        }
-        return true;
     }
 
     public boolean touchResultView(MotionEvent e) {
@@ -140,25 +129,6 @@ public class TouchHandler {
             return false;
         }
         return true;
-    }
-
-    void raiseTouchMenuViewEvent() {
-        GameEngine.mScoreHandler.init();
-        GameEngine.mTimeHandler.reset();
-        GameEngine.init();
-        Message msg = new Message();
-        msg.what = GameEngine.GAME_START;
-        GameEngine.mHandler.sendMessage(msg);
-    }
-
-    void raiseTouchResultViewEvent() {
-        GameEngine.mScene = E_SCENARIO.GAME;
-        GameEngine.mScoreHandler.init();
-        GameEngine.mTimeHandler.reset();
-        GameEngine.init();
-        Message msg = new Message();
-        msg.what = GameEngine.GAME_START;
-        GameEngine.mHandler.sendMessage(msg);
     }
 
     void raiseTouchGameViewEvent() {
