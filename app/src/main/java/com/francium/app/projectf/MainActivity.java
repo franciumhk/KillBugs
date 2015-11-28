@@ -32,6 +32,7 @@ import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,14 +93,16 @@ public class MainActivity extends Activity
     // not playing.
     String mRoomId = null;
 
+    // My participant ID in the currently active game
+    String mOwnParticipantID = null;
+    String mPeerParticipantID = null;
+
     // Are we playing in multiplayer mode?
     public static boolean mMultiplayer = false;
 
     // The participants in the currently active game
     ArrayList<Participant> mParticipants = null;
 
-    // My participant ID in the currently active game
-    String mMyId = null;
 
     // If non-null, this is the id of the invitation we received via the
     // invitation listener
@@ -182,7 +185,7 @@ public class MainActivity extends Activity
                 break;
             case R.id.button_invite_players:
                 // show list of invitable players
-                intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 3);
+                intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 1);
                 Log.d("DEBUG", "screen_wait: button_invite_players");
                 switchToScreen(R.id.screen_wait);
                 startActivityForResult(intent, RC_SELECT_PLAYERS);
@@ -532,11 +535,11 @@ public class MainActivity extends Activity
 
         //get participants and my ID:
         mParticipants = room.getParticipants();
-        mMyId = room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
+        mOwnParticipantID = room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
 
         // print out the list of participants (for debug purposes)
         Log.d(TAG, "Room ID: " + mRoomId);
-        Log.d(TAG, "My ID " + mMyId);
+        Log.d(TAG, "My ID " + mOwnParticipantID);
         Log.d(TAG, "<< CONNECTED TO ROOM>>");
     }
 
@@ -628,6 +631,7 @@ public class MainActivity extends Activity
 
     @Override
     public void onPeerJoined(Room room, List<String> arg1) {
+        Log.d(TAG, "onPeerJoined(" + ", " + room + ")");
         updateRoom(room);
     }
 
@@ -648,6 +652,9 @@ public class MainActivity extends Activity
 
     @Override
     public void onPeersConnected(Room room, List<String> peers) {
+        Log.d(TAG, "onPeerJoined(" + ", " + room + ")");
+        Log.d(TAG, "peers:" + peers);
+        mPeerParticipantID = peers.get(0);
         updateRoom(room);
     }
 
@@ -659,6 +666,8 @@ public class MainActivity extends Activity
     void updateRoom(Room room) {
         if (room != null) {
             mParticipants = room.getParticipants();
+            String roomId = room.getRoomId();
+            Log.d(TAG, "roomId:" + roomId);
         }
         if (mParticipants != null) {
             updatePeerScores(false);
@@ -680,15 +689,77 @@ public class MainActivity extends Activity
         mFinishedParticipants.clear();
     }
 
+    public static long byteArrayToLeLong(byte[] encodedValue) {
+        long value;
+        value = (encodedValue[7] << (Byte.SIZE * 7));
+        value |= (encodedValue[6] & 0xFF) << (Byte.SIZE * 6);
+        value |= (encodedValue[5] & 0xFF) << (Byte.SIZE * 5);
+        value |= (encodedValue[4] & 0xFF) << (Byte.SIZE * 4);
+        value |= (encodedValue[3] & 0xFF) << (Byte.SIZE * 3);
+        value |= (encodedValue[2] & 0xFF) << (Byte.SIZE * 2);
+        value |= (encodedValue[1] & 0xFF) << (Byte.SIZE * 1);
+        value |= (encodedValue[0] & 0xFF);
+        return value;
+    }
+
+    long generateRandomSeed()
+    {
+        byte[] ownID = new byte[8];
+        try {
+            ownID = mOwnParticipantID.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        byte[] peerID = new byte[8];
+        try {
+            peerID = mPeerParticipantID.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("DEBUG", "mOwnParticipantID: "+ mOwnParticipantID);
+        Log.d("DEBUG", "mPeerParticipantID: "+ mPeerParticipantID);
+        long seed = 0;
+        int length = ownID.length < peerID.length ? peerID.length : ownID.length;
+        length += 7;
+        length /=8;
+        length *= 8;
+        byte[] combineID = new byte[length];
+        Log.d("DEBUG", "combineID: "+ combineID.toString());
+        for (int i = 0; i < length; i++){
+            if (i < ownID.length)
+                combineID[i] += ownID[i];
+            if (i < peerID.length)
+                combineID[i] += peerID[i];
+        }
+        Log.d("DEBUG", "combineID: "+ combineID.toString());
+
+        for (int i = 8; i < length; i+=8){
+            for (int j = 0; j < 8; j++) {
+                combineID[j] += combineID[j+i];
+            }
+        }
+        Log.d("DEBUG", "combineID: "+ combineID.toString());
+        seed = byteArrayToLeLong(combineID);
+        Log.d("DEBUG", "seed: "+ seed);
+        return seed;
+    }
+
+
     // Start the gameplay phase of the game.
     void startGame(final boolean multiplayer) {
         Log.d(TAG, "startGame");
         mMultiplayer = multiplayer;
         updatePeerScores(false);
         broadcastScore(false);
-        Log.d(TAG, "mRoomId: " + mRoomId);
 
-        GameEngine.init(0);
+        if (multiplayer == true) {
+            GameEngine.setRandomSeed(generateRandomSeed());
+        }
+        else {
+            GameEngine.setRandomSeed(System.currentTimeMillis());
+        }
+        GameEngine.init();
 
         Message msg = new Message();
         msg.what = GameEngine.GAME_START;
@@ -698,6 +769,8 @@ public class MainActivity extends Activity
         mGLSurfaceView.onStartRendering();
 
         isGameRunning = true;
+        GameEngine.mFinalScore = false;
+        GameEngine.mUpdatePeer = false;
         mThread = new Thread() {
             public void run() {
                 while (isGameRunning) {
@@ -705,13 +778,11 @@ public class MainActivity extends Activity
                         if (GameEngine.mUpdatePeer == true) {
                             GameEngine.mUpdatePeer = false;
                             broadcastScore(false);
-                            Log.d(STAG, "broadcastScore");
                         }
                         if (GameEngine.mFinalScore == true) {
                             GameEngine.mFinalScore = false;
                             broadcastScore(true);
                             submitScore(GameEngine.mScoreHandler.getFinalOwnScore());
-                            Log.d(STAG, "broadcastFinalScore");
                         }
                         Thread.sleep(Configuration.DELAY_MS);
                     } catch (Exception e) {
@@ -774,8 +845,6 @@ public class MainActivity extends Activity
         byte[] buf = rtm.getMessageData();
         String sender = rtm.getSenderParticipantId();
         String msg = bytesToHex(buf);
-        Log.d(STAG, "Message received: " + msg);
-
         if (buf[0] == 'F' || buf[0] == 'U') {
             // score update.
             int existingScore = mParticipantScore.containsKey(sender) ?
@@ -783,20 +852,10 @@ public class MainActivity extends Activity
             byte[] tmp = new byte[4];
             arraycopy(buf, 1, tmp, 0, 4);
             int thisScore = byteArrayToLeInt(tmp);
-            Log.d(STAG, "ReceivedScore: " + thisScore);
             if (thisScore > existingScore) {
-                // this check is necessary because packets may arrive out of
-                // order, so we
-                // should only ever consider the highest score we received, as
-                // we know in our
-                // game there is no way to lose points. If there was a way to
-                // lose points,
-                // we'd have to add a "serial number" to the packet.
                 mParticipantScore.put(sender, thisScore);
+                updatePeerScores(false);
             }
-
-            // update the scores on the screen
-            updatePeerScores(false);
 
             // if it's a final score, mark this participant as having finished
             // the game
@@ -823,29 +882,25 @@ public class MainActivity extends Activity
         else {
             score = GameEngine.mScoreHandler.getOwnScore();
         }
-
-        Log.d(STAG, "broadcastScore dec: " + score);
         byte[] tmp = leIntToByteArray(score);
         arraycopy(tmp, 0, mMsgBuf, 1, 4);
 
-        String msg = bytesToHex(mMsgBuf);
-        Log.d(STAG, "broadcastScore Hex: " + msg);
+//        String msg = bytesToHex(mMsgBuf);
+//        Log.d(STAG, "broadcastScore Hex: " + msg);
 
+        broadcast();
+    }
+
+    void broadcast(){
         // Send to every other participant.
         for (Participant p : mParticipants) {
-            if (p.getParticipantId().equals(mMyId))
+            if (p.getParticipantId().equals(mOwnParticipantID))
                 continue;
             if (p.getStatus() != Participant.STATUS_JOINED)
                 continue;
-            if (finalScore) {
-                // final score notification must be sent via reliable message
-                Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
-                        mRoomId, p.getParticipantId());
-            } else {
-                // it's an interim score notification, so we can use unreliable
-                Games.RealTimeMultiplayer.sendUnreliableMessage(mGoogleApiClient, mMsgBuf, mRoomId,
-                        p.getParticipantId());
-            }
+            // final score notification must be sent via reliable message
+            Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
+                    mRoomId, p.getParticipantId());
         }
     }
 
@@ -909,7 +964,7 @@ public class MainActivity extends Activity
         if (mRoomId != null) {
             for (Participant p : mParticipants) {
                 String pid = p.getParticipantId();
-                if (pid.equals(mMyId))
+                if (pid.equals(mOwnParticipantID))
                     continue;
                 if (p.getStatus() != Participant.STATUS_JOINED)
                     continue;

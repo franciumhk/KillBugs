@@ -73,7 +73,7 @@ public class GameEngine {
     public static boolean mFinalScore = false;
 
     static private Random randomGenerator = new Random(System.currentTimeMillis());
-
+    static private long mRandomSeed = 0;
     ArrayList<EventAction> mActionEventList = new ArrayList<EventAction>();
 
     static final int EFT_NONE = 0;
@@ -95,17 +95,17 @@ public class GameEngine {
         mEffect = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
         mDisappearToken = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
         mToken = new TokenHandler();
-        init((int)System.currentTimeMillis());
+        init();
     }
 
-    public static void init(long seed) {
-        initRandom(seed);
+    public static void init() {
         mScoreHandler.init();
         mTimeHandler.reset();
         previousExchangeCol1 = 0;
         previousExchangeRow1 = 0;
         previousExchangeCol2 = 0;
         previousExchangeRow2 = 0;
+        initRandom(mRandomSeed);
         for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {
             for (int j = 0; j < (int) Configuration.GRID_NUM; j++) {
                 mBugItemPic[i][j] = getRandom();
@@ -116,6 +116,10 @@ public class GameEngine {
                 mDisappearToken[i][j] = -1;
             }
         }
+    }
+
+    public static void setRandomSeed(long seed) {
+        mRandomSeed = seed;
     }
 
     public static boolean GetIsBusy() {
@@ -511,7 +515,7 @@ public class GameEngine {
                 }
             }
         }
-        init((int)System.currentTimeMillis());
+        init();
         Message msg = new Message();
         msg.what = GameEngine.FILL_END;
         GameEngine.mHandler.sendMessage(msg);
@@ -868,38 +872,37 @@ public class GameEngine {
         String result = "Wait...";
         int resultColor = Color.BLACK;
         if (MainActivity.mMultiplayer) {
-            if (mScoreHandler.getFinalPeerScore() != 0) {
+            if (mScoreHandler.getFinalPeerScore() >= 0) {
                 score = Integer.toString(mScoreHandler.getFinalPeerScore());
                 if (mScoreHandler.getFinalPeerScore() > mScoreHandler.getFinalOwnScore()) {
                     result = "LOSE";
                     resultColor = Color.GRAY;
-                }
-                else {
+                } else {
                     result = "WIN!";
                     resultColor = Color.RED;
                 }
-                drawString.draw(gl,
-                        result,
-                        120,
-                        40,
-                        -50,
-                        resultColor
-                );
-                drawString.draw(gl,
-                        "OPPONENT:" ,
-                        60,
-                        40,
-                        -30,
-                        Color.BLACK
-                );
-                drawString.draw(gl,
-                        score,
-                        60,
-                        40,
-                        -20,
-                        Color.BLACK
-                );
             }
+            drawString.draw(gl,
+                    result,
+                    120,
+                    40,
+                    -50,
+                    resultColor
+            );
+            drawString.draw(gl,
+                    "OPPONENT:" ,
+                    60,
+                    40,
+                    -30,
+                    Color.BLACK
+            );
+            drawString.draw(gl,
+                    score,
+                    60,
+                    40,
+                    -20,
+                    Color.BLACK
+            );
             drawString.draw(gl,
                     "YOU:",
                     60,

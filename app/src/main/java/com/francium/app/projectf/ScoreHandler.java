@@ -26,7 +26,7 @@ public class ScoreHandler {
         mPeerScore = 0;
         mAwardScore = 0;
 
-        mFinalPeerScore = 0;
+        mFinalPeerScore = -1;
         mFinalOwnScore = 0;
 
         mAwardRatio = 0;

@@ -53,11 +53,86 @@
           <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/MainActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5480944">
-                  <caret line="690" column="20" selection-start-line="690" selection-start-column="20" selection-end-line="690" selection-end-column="20" />
+                <state vertical-scroll-proportion="0.47844827">
+                  <caret line="893" column="21" selection-start-line="893" selection-start-column="21" selection-end-line="893" selection-end-column="21" />
                   <folding>
                     <element signature="imports" expanded="true" />
+                    <element signature="e#6409#6424#0" expanded="true" />
+                    <element signature="e#11725#11752#0" expanded="true" />
+                    <element signature="e#18683#18718#0" expanded="true" />
+                    <element signature="e#20295#20345#0" expanded="true" />
+                    <element signature="e#21215#21253#0" expanded="true" />
+                    <element signature="e#22721#22753#0" expanded="true" />
+                    <element signature="e#24579#24580#0" expanded="true" />
+                    <element signature="e#24611#24612#0" expanded="true" />
+                    <element signature="e#24694#24695#0" expanded="true" />
+                    <element signature="e#24726#24727#0" expanded="true" />
+                    <element signature="e#25124#25125#0" expanded="true" />
+                    <element signature="e#25156#25157#0" expanded="true" />
+                    <element signature="e#25219#25220#0" expanded="true" />
+                    <element signature="e#25251#25252#0" expanded="true" />
+                    <element signature="e#25312#25313#0" expanded="true" />
+                    <element signature="e#25344#25345#0" expanded="true" />
+                    <element signature="e#25679#25680#0" expanded="true" />
+                    <element signature="e#25711#25712#0" expanded="true" />
+                    <element signature="e#29301#30111#0" expanded="true" />
+                    <element signature="e#30110#30111#0" expanded="true" />
+                    <element signature="e#30410#30427#0" expanded="true" />
+                    <element signature="e#30534#30542#0" expanded="true" />
+                    <element signature="e#38097#38143#0" expanded="true" />
+                    <element signature="e#38442#38488#0" expanded="true" />
+                    <element signature="e#39882#39918#0" expanded="true" />
+                    <element signature="e#40077#40113#0" expanded="true" />
+                    <element signature="e#40272#40308#0" expanded="true" />
+                    <element signature="e#40467#40503#0" expanded="true" />
+                    <element signature="e#40662#40698#0" expanded="true" />
+                    <element signature="e#40857#40893#0" expanded="true" />
+                    <element signature="e#41058#41097#0" expanded="true" />
+                    <element signature="e#41299#41338#0" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="String.java" pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/lang/String.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="532" column="24" selection-start-line="532" selection-start-column="24" selection-end-line="532" selection-end-column="24" />
+                  <folding>
+                    <element signature="e#19077#19078#0" expanded="true" />
+                    <element signature="e#19134#19135#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="List.java" pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/util/List.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="166" column="13" selection-start-line="166" selection-start-column="13" selection-end-line="166" selection-end-column="13" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="RealTimeMultiplayer.class" pinned="false" current-in-tab="false">
+            <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.3.0/jars/classes.jar!/com/google/android/gms/games/multiplayer/realtime/RealTimeMultiplayer.class">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="-6.4444447">
+                  <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Room.class" pinned="false" current-in-tab="false">
+            <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.3.0/jars/classes.jar!/com/google/android/gms/games/multiplayer/realtime/Room.class">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="-5.148148">
+                  <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -89,27 +164,27 @@
           <file leaf-file-name="ScoreHandler.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/ScoreHandler.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-3.1551723">
-                  <caret line="96" column="17" selection-start-line="96" selection-start-column="17" selection-end-line="96" selection-end-column="17" />
+                <state vertical-scroll-proportion="-7.62069">
+                  <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
                   <folding>
                     <element signature="e#397#398#0" expanded="true" />
                     <element signature="e#419#420#0" expanded="true" />
-                    <element signature="e#1884#1885#0" expanded="true" />
-                    <element signature="e#1918#1919#0" expanded="true" />
-                    <element signature="e#1959#1960#0" expanded="true" />
-                    <element signature="e#1992#1993#0" expanded="true" />
-                    <element signature="e#2024#2025#0" expanded="true" />
-                    <element signature="e#2057#2058#0" expanded="true" />
-                    <element signature="e#2089#2090#0" expanded="true" />
-                    <element signature="e#2121#2122#0" expanded="true" />
-                    <element signature="e#2169#2170#0" expanded="true" />
-                    <element signature="e#2208#2209#0" expanded="true" />
-                    <element signature="e#2254#2255#0" expanded="true" />
-                    <element signature="e#2292#2293#0" expanded="true" />
-                    <element signature="e#2329#2330#0" expanded="true" />
-                    <element signature="e#2367#2368#0" expanded="true" />
-                    <element signature="e#2404#2405#0" expanded="true" />
-                    <element signature="e#2441#2442#0" expanded="true" />
+                    <element signature="e#1885#1886#0" expanded="true" />
+                    <element signature="e#1919#1920#0" expanded="true" />
+                    <element signature="e#1960#1961#0" expanded="true" />
+                    <element signature="e#1993#1994#0" expanded="true" />
+                    <element signature="e#2025#2026#0" expanded="true" />
+                    <element signature="e#2058#2059#0" expanded="true" />
+                    <element signature="e#2090#2091#0" expanded="true" />
+                    <element signature="e#2122#2123#0" expanded="true" />
+                    <element signature="e#2170#2171#0" expanded="true" />
+                    <element signature="e#2209#2210#0" expanded="true" />
+                    <element signature="e#2255#2256#0" expanded="true" />
+                    <element signature="e#2293#2294#0" expanded="true" />
+                    <element signature="e#2330#2331#0" expanded="true" />
+                    <element signature="e#2368#2369#0" expanded="true" />
+                    <element signature="e#2405#2406#0" expanded="true" />
+                    <element signature="e#2442#2443#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -118,14 +193,18 @@
           <file leaf-file-name="GameEngine.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/GameEngine.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.45553538">
-                  <caret line="104" column="33" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="33" />
+                <state vertical-scroll-proportion="0.35560346">
+                  <caret line="846" column="20" selection-start-line="846" selection-start-column="20" selection-end-line="846" selection-end-column="20" />
                   <folding>
                     <element signature="e#1588#1602#0" expanded="true" />
-                    <element signature="e#4260#4261#0" expanded="true" />
-                    <element signature="e#4299#4300#0" expanded="true" />
-                    <element signature="e#4340#4341#0" expanded="true" />
-                    <element signature="e#4390#4391#0" expanded="true" />
+                    <element signature="e#1676#1691#0" expanded="true" />
+                    <element signature="e#2422#2435#0" expanded="true" />
+                    <element signature="e#4123#4124#0" expanded="true" />
+                    <element signature="e#4157#4158#0" expanded="true" />
+                    <element signature="e#4352#4353#0" expanded="true" />
+                    <element signature="e#4391#4392#0" expanded="true" />
+                    <element signature="e#4432#4433#0" expanded="true" />
+                    <element signature="e#4482#4483#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -135,7 +214,7 @@
             <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/util/Random.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="187" column="12" selection-start-line="187" selection-start-column="12" selection-end-line="187" selection-end-column="12" />
+                  <caret line="77" column="57" selection-start-line="77" selection-start-column="57" selection-end-line="77" selection-end-column="57" />
                   <folding>
                     <element signature="e#2573#2574#0" expanded="true" />
                     <element signature="e#2602#2603#0" expanded="true" />
@@ -2737,14 +2816,14 @@
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/styles.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/ScoreHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/ids.xml" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/ResetAchievement.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/TouchHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/GameActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/ScoreHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/GameEngine.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -3084,7 +3163,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26697353" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36708862" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32911393" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -3098,7 +3177,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39930955" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -3119,7 +3198,9 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -3165,14 +3246,6 @@
             <element signature="e#330#331#0" expanded="true" />
             <element signature="e#351#352#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/ids.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.962963">
-          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3230,24 +3303,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/GameActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="35" selection-start-line="19" selection-start-column="35" selection-end-line="19" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5480944">
-          <caret line="690" column="20" selection-start-line="690" selection-start-column="20" selection-end-line="690" selection-end-column="20" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.3.0/jars/classes.jar!/com/google/android/gms/games/multiplayer/Participant.class">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.17525773">
@@ -3269,33 +3324,6 @@
         <state vertical-scroll-proportion="0.29209623">
           <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/ScoreHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.1551723">
-          <caret line="96" column="17" selection-start-line="96" selection-start-column="17" selection-end-line="96" selection-end-column="17" />
-          <folding>
-            <element signature="e#397#398#0" expanded="true" />
-            <element signature="e#419#420#0" expanded="true" />
-            <element signature="e#1884#1885#0" expanded="true" />
-            <element signature="e#1918#1919#0" expanded="true" />
-            <element signature="e#1959#1960#0" expanded="true" />
-            <element signature="e#1992#1993#0" expanded="true" />
-            <element signature="e#2024#2025#0" expanded="true" />
-            <element signature="e#2057#2058#0" expanded="true" />
-            <element signature="e#2089#2090#0" expanded="true" />
-            <element signature="e#2121#2122#0" expanded="true" />
-            <element signature="e#2169#2170#0" expanded="true" />
-            <element signature="e#2208#2209#0" expanded="true" />
-            <element signature="e#2254#2255#0" expanded="true" />
-            <element signature="e#2292#2293#0" expanded="true" />
-            <element signature="e#2329#2330#0" expanded="true" />
-            <element signature="e#2367#2368#0" expanded="true" />
-            <element signature="e#2404#2405#0" expanded="true" />
-            <element signature="e#2441#2442#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3325,8 +3353,113 @@
         <state vertical-scroll-proportion="0.60980034">
           <caret line="876" column="6" selection-start-line="876" selection-start-column="6" selection-end-line="876" selection-end-column="6" />
           <folding>
-            <element signature="e#30215#30216#0" expanded="true" />
-            <element signature="e#30280#30281#0" expanded="true" />
+            <element signature="e#30215#30216#0" expanded="false" />
+            <element signature="e#30280#30281#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/ScoreHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.62069">
+          <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
+          <folding>
+            <element signature="e#397#398#0" expanded="true" />
+            <element signature="e#419#420#0" expanded="true" />
+            <element signature="e#1885#1886#0" expanded="true" />
+            <element signature="e#1919#1920#0" expanded="true" />
+            <element signature="e#1960#1961#0" expanded="true" />
+            <element signature="e#1993#1994#0" expanded="true" />
+            <element signature="e#2025#2026#0" expanded="true" />
+            <element signature="e#2058#2059#0" expanded="true" />
+            <element signature="e#2090#2091#0" expanded="true" />
+            <element signature="e#2122#2123#0" expanded="true" />
+            <element signature="e#2170#2171#0" expanded="true" />
+            <element signature="e#2209#2210#0" expanded="true" />
+            <element signature="e#2255#2256#0" expanded="true" />
+            <element signature="e#2293#2294#0" expanded="true" />
+            <element signature="e#2330#2331#0" expanded="true" />
+            <element signature="e#2368#2369#0" expanded="true" />
+            <element signature="e#2405#2406#0" expanded="true" />
+            <element signature="e#2442#2443#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.3.0/jars/classes.jar!/com/google/android/gms/games/multiplayer/realtime/RealTimeMessage.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35151514">
+          <caret line="34" column="18" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
+          <folding>
+            <element signature="e#1157#1158#0" expanded="true" />
+            <element signature="e#1190#1191#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/ids.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.962963">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/GameActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="35" selection-start-line="19" selection-start-column="35" selection-end-line="19" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.3.0/jars/classes.jar!/com/google/android/gms/games/multiplayer/realtime/Room.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.148148">
+          <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.3.0/jars/classes.jar!/com/google/android/gms/games/multiplayer/realtime/RealTimeMultiplayer.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.4444447">
+          <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/util/Map.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334">
+          <caret line="192" column="13" selection-start-line="192" selection-start-column="13" selection-end-line="192" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/util/List.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="166" column="13" selection-start-line="166" selection-start-column="13" selection-end-line="166" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/nio/charset/Charset.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.109195">
+          <caret line="154" column="22" selection-start-line="154" selection-start-column="22" selection-end-line="154" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="532" column="24" selection-start-line="532" selection-start-column="24" selection-end-line="532" selection-end-column="24" />
+          <folding>
+            <element signature="e#19077#19078#0" expanded="true" />
+            <element signature="e#19134#19135#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3334,7 +3467,7 @@
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-23/java/util/Random.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="187" column="12" selection-start-line="187" selection-start-column="12" selection-end-line="187" selection-end-column="12" />
+          <caret line="77" column="57" selection-start-line="77" selection-start-column="57" selection-end-line="77" selection-end-column="57" />
           <folding>
             <element signature="e#2573#2574#0" expanded="true" />
             <element signature="e#2602#2603#0" expanded="true" />
@@ -3346,14 +3479,60 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/GameEngine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45553538">
-          <caret line="104" column="33" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.35560346">
+          <caret line="846" column="20" selection-start-line="846" selection-start-column="20" selection-end-line="846" selection-end-column="20" />
           <folding>
             <element signature="e#1588#1602#0" expanded="true" />
-            <element signature="e#4260#4261#0" expanded="true" />
-            <element signature="e#4299#4300#0" expanded="true" />
-            <element signature="e#4340#4341#0" expanded="true" />
-            <element signature="e#4390#4391#0" expanded="true" />
+            <element signature="e#1676#1691#0" expanded="true" />
+            <element signature="e#2422#2435#0" expanded="true" />
+            <element signature="e#4123#4124#0" expanded="true" />
+            <element signature="e#4157#4158#0" expanded="true" />
+            <element signature="e#4352#4353#0" expanded="true" />
+            <element signature="e#4391#4392#0" expanded="true" />
+            <element signature="e#4432#4433#0" expanded="true" />
+            <element signature="e#4482#4483#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/francium/app/projectf/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.47844827">
+          <caret line="893" column="21" selection-start-line="893" selection-start-column="21" selection-end-line="893" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#6409#6424#0" expanded="true" />
+            <element signature="e#11725#11752#0" expanded="true" />
+            <element signature="e#18683#18718#0" expanded="true" />
+            <element signature="e#20295#20345#0" expanded="true" />
+            <element signature="e#21215#21253#0" expanded="true" />
+            <element signature="e#22721#22753#0" expanded="true" />
+            <element signature="e#24579#24580#0" expanded="true" />
+            <element signature="e#24611#24612#0" expanded="true" />
+            <element signature="e#24694#24695#0" expanded="true" />
+            <element signature="e#24726#24727#0" expanded="true" />
+            <element signature="e#25124#25125#0" expanded="true" />
+            <element signature="e#25156#25157#0" expanded="true" />
+            <element signature="e#25219#25220#0" expanded="true" />
+            <element signature="e#25251#25252#0" expanded="true" />
+            <element signature="e#25312#25313#0" expanded="true" />
+            <element signature="e#25344#25345#0" expanded="true" />
+            <element signature="e#25679#25680#0" expanded="true" />
+            <element signature="e#25711#25712#0" expanded="true" />
+            <element signature="e#29301#30111#0" expanded="true" />
+            <element signature="e#30110#30111#0" expanded="true" />
+            <element signature="e#30410#30427#0" expanded="true" />
+            <element signature="e#30534#30542#0" expanded="true" />
+            <element signature="e#38097#38143#0" expanded="true" />
+            <element signature="e#38442#38488#0" expanded="true" />
+            <element signature="e#39882#39918#0" expanded="true" />
+            <element signature="e#40077#40113#0" expanded="true" />
+            <element signature="e#40272#40308#0" expanded="true" />
+            <element signature="e#40467#40503#0" expanded="true" />
+            <element signature="e#40662#40698#0" expanded="true" />
+            <element signature="e#40857#40893#0" expanded="true" />
+            <element signature="e#41058#41097#0" expanded="true" />
+            <element signature="e#41299#41338#0" expanded="true" />
           </folding>
         </state>
       </provider>
