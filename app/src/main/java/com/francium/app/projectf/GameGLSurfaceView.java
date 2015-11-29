@@ -16,7 +16,6 @@ public class GameGLSurfaceView extends GLSurfaceView {
     public static boolean isSurfaceViewthreadRunning = true;
     private SceneRenderer mRenderer;
     Context mContext;
-//    static boolean m_bThreadRun = false;
     static GameEngine gameEngine;
     TouchHandler touchHandler;
 
@@ -35,13 +34,10 @@ public class GameGLSurfaceView extends GLSurfaceView {
         setRenderer(mRenderer);
 //        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-//        Log.d("DEBUG", "onStartRendering");
         onInitRendering();
     }
 
     public void onInitRendering(){
-//        if (!m_bThreadRun) {
-//            m_bThreadRun = true;
         gameEngine = new GameEngine(mContext);
         isSurfaceViewthreadRunning = true;
 
@@ -59,18 +55,10 @@ public class GameGLSurfaceView extends GLSurfaceView {
             }
         };
         mThread.start();
-//        }
     }
 
     public void onStartRendering() {
         isSurfaceViewthreadRunning = true;
-    }
-
-    public void onStopRendering(){
-        isSurfaceViewthreadRunning = false;
-        mThread.interrupt();
-//        m_bThreadRun = false;
-        mThread = null;
     }
 
     @Override
@@ -80,8 +68,6 @@ public class GameGLSurfaceView extends GLSurfaceView {
                 if (GameEngine.GetIsBusy() == true)
                      return true;
                 touchHandler.touchGameView(e);
-            } else if (GameEngine.mScene == E_SCENARIO.MENU) {
-//                touchHandler.touchMenuView(e);
             } else if (GameEngine.mScene == E_SCENARIO.RESULT) {
                 touchHandler.touchResultView(e);
             }
@@ -105,8 +91,6 @@ public class GameGLSurfaceView extends GLSurfaceView {
 
             if (GameEngine.mScene == E_SCENARIO.GAME) {
                 gameEngine.drawGameScene(gl);
-            } else if (GameEngine.mScene == E_SCENARIO.MENU) {
-//                gameEngine.drawMenuScene(gl);
             } else if (GameEngine.mScene == E_SCENARIO.RESULT) {
                 gameEngine.drawResultScene(gl);
             }

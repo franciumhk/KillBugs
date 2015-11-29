@@ -10,14 +10,15 @@ public class TimeHandler {
     long mStartTime;
     boolean mStop = true;
 
-    public TimeHandler(int maxTime) {
-        mMaxTime = maxTime;
-        mTimeLeft = maxTime;
+    public TimeHandler() {
+        mMaxTime = Configuration.MAX_TIME;
+        mTimeLeft = Configuration.MAX_TIME;
         mStop = true;
     }
 
     public void reset() {
-        mTimeLeft = mMaxTime;
+        mMaxTime = Configuration.MAX_TIME;
+        mTimeLeft = Configuration.MAX_TIME;
         mTimeUsed = 0;
     }
 

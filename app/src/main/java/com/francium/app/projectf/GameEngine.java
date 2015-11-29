@@ -89,7 +89,7 @@ public class GameEngine {
         mContext = context;
         mScoreHandler = new ScoreHandler();
         mSoundHandler = new SoundHandler(context);
-        mTimeHandler = new TimeHandler(Configuration.MAX_TIME);
+        mTimeHandler = new TimeHandler();
         mBugItemPic = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
         mPicBak = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
         mEffect = new int[(int) Configuration.GRID_NUM][(int) Configuration.GRID_NUM];
@@ -139,11 +139,7 @@ public class GameEngine {
     }
 
     static int getRandom() {
-//        int data = (int) (Math.random() * 100);
-//        randomGenerator = new Random(System.currentTimeMillis());
-//        Log.d("DEBUG", "get random");
         int data = randomGenerator.nextInt(7) + 1;
-//        return (data % 7) + 1;
         return data;
     }
 
@@ -281,7 +277,7 @@ public class GameEngine {
 
     }
     static void reverseExchange(){
-//        mSoundHandler.play(E_SOUND.INVALID);
+        mSoundHandler.play(Configuration.E_SOUND.INVALID);
         Log.d("DEBUG", "reverseExchange");
         Message msg = new Message();
         Bundle b = new Bundle();
@@ -318,26 +314,32 @@ public class GameEngine {
                         mScoreHandler.increaseOwnHealth(1);
                         Log.d("DEBUG", "Heal!!!");
                     }
+                    if (mBugItemPic[i][j] == Configuration.BUG_ID_AWARD) {
+                        mScoreHandler.increaseAwardRatio();
+                        Log.d("DEBUG", "Award!!!");
+                    }
+                    if (mBugItemPic[i][j] == Configuration.BUG_ID_BONUS) {
+                        mScoreHandler.increaseBonusCnt();
+                        Log.d("DEBUG", "Bonus!!!");
+                    }
                 }
             }
         }
 //        Log.d("DEBUG", "disappear markCount = " + markCount);
         if (markCount > 0) {
-            //if (3 == markCount)
-                //mSoundHandler.play(E_SOUND.DISAPPEAR3);
-            //else if (4 == markCount)
-                //mSoundHandler.play(E_SOUND.DISAPPEAR4);
-            //else if (markCount >= 5)
-                //mSoundHandler.play(E_SOUND.DISAPPEAR5);
+            if (3 == markCount)
+                mSoundHandler.play(Configuration.E_SOUND.DISAPPEAR3);
+            else if (4 == markCount)
+                mSoundHandler.play(Configuration.E_SOUND.DISAPPEAR4);
+            else if (markCount >= 5)
+                mSoundHandler.play(Configuration.E_SOUND.DISAPPEAR5);
             DrawDisappear drawDisappear = getDrawDisappear(token);
             if (drawDisappear != null) {
                 drawDisappear.action.setToken(token);
                 drawDisappear.action.start();
             }
-            mScoreHandler.increase();
-            mScoreHandler.calcTotal(markCount);
-            mScoreHandler.increase(markCount);
             mScoreHandler.increaseCombo();
+            mScoreHandler.calcTotal(markCount);
         } else {
 //            Log.d("DEBUG", "free token!~ markDisappear");
             mScoreHandler.reset();
@@ -573,7 +575,7 @@ public class GameEngine {
     static void markSpecialBugItem(int token, int col, int row) {
         if (iSpecialBugItem(col, row)) {
             Log.d("DEBUG", "markSpecialBugItem: SPECIALITEM");
-            //mSoundHandler.play(E_SOUND.SPECIALITEM);
+            mSoundHandler.play(Configuration.E_SOUND.SPECIALITEM);
             markSpecialItem(token, col, row);
         } else {
             Log.d("DEBUG", "free token!~ markSpecialBugItem");
@@ -586,14 +588,12 @@ public class GameEngine {
         if (iSpecialBugItem(col, row)) {
             ActionSpecialItem mAction = (ActionSpecialItem) drawSpecialItem.action;
             int picId = mAction.getPicId();
-            int markCount = 0;
             mBugItemPic[col][row] = EFT_DISAPPEAR + token;
             for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {
                 for (int j = 0; j < (int) Configuration.GRID_NUM; j++) {
                     if (picId == mBugItemPic[i][j] && -1 == mDisappearToken[i][j]) {
                         mEffect[i][j] = EFT_DISAPPEAR;
                         mDisappearToken[i][j] = token;
-                        markCount++;
                     }
                 }
             }
@@ -602,8 +602,6 @@ public class GameEngine {
                 drawDisappear.action.setToken(token);
                 drawDisappear.action.start();
             }
-            mScoreHandler.increase();
-            mScoreHandler.increase(markCount);
         }
     }
 
@@ -760,7 +758,7 @@ public class GameEngine {
                 case EXCHANGE_START: {
                     isBusy = true;
                     Log.d("DEBUG", "EXCHANGE_START");
-                    //mSoundHandler.play(E_SOUND.SLIDE);
+                    mSoundHandler.play(Configuration.E_SOUND.SLIDE);
                     clearAutoTip();
                     Bundle b = msg.getData();
                     int token = b.getInt("token");
@@ -812,6 +810,7 @@ public class GameEngine {
                     int token = b.getInt("token");
                     int clearCnt = clearPic(token);
                     unMarkDisappear(token);
+                    Log.d("DEBUG", "award: " + clearCnt);
                     mScoreHandler.award(clearCnt);
                     freeToken(token);
                     markFill();
@@ -852,6 +851,7 @@ public class GameEngine {
                     break;
                 case GAME_OVER: {
                     Log.d("DEBUG", "GAME_OVER");
+                    mSoundHandler.play(Configuration.E_SOUND.END);
                     mScoreHandler.setFinalOwnScore(mScoreHandler.getOwnScore());
                     mScoreHandler.setFinalOwnHealthPoint(mScoreHandler.getOwnHealthPoint());
                     mFinalScore = true;

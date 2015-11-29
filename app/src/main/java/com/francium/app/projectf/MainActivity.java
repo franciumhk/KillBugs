@@ -392,6 +392,7 @@ public class MainActivity extends Activity
         else {
             switchToScreen(R.id.screen_main);
         }
+        mp.stop();
         super.onStop();
         super.finish();
         return;
@@ -414,6 +415,12 @@ public class MainActivity extends Activity
         }
         super.onStart();
         switchToMainScreen();
+        if (mp == null) {
+            mp = MediaPlayer.create(this, R.raw.s_background);
+            mp.setVolume(0.1f, 0.1f);
+            mp.setLooping(true);
+            mp.start();
+        }
     }
 
     // Leave the room.
@@ -666,9 +673,7 @@ public class MainActivity extends Activity
             String roomId = room.getRoomId();
             Log.d(TAG, "roomId:" + roomId);
         }
-        if (mParticipants != null) {
-//            updatePeerStatus();
-        }
+
     }
 
     /*
@@ -738,15 +743,17 @@ public class MainActivity extends Activity
     void startGame(final boolean multiplayer) {
         Log.d(TAG, "startGame");
         mMultiplayer = multiplayer;
-//        updatePeerStatus();
         broadcastStatus();
 
         if (multiplayer == true) {
             GameEngine.setRandomSeed(generateRandomSeed());
+            Configuration.MAX_TIME = Configuration.MAX_TIME_MULTIPLAYER;
         }
         else {
             GameEngine.setRandomSeed(System.currentTimeMillis());
+            Configuration.MAX_TIME = Configuration.MAX_TIME_SINGLE_PLAYER;
         }
+
         GameEngine.init();
 
         Message msg = new Message();
@@ -826,8 +833,6 @@ public class MainActivity extends Activity
     @Override
     public void onRealTimeMessageReceived(RealTimeMessage rtm) {
         byte[] buf = rtm.getMessageData();
-        String sender = rtm.getSenderParticipantId();
-        Log.d("DEBUG", "onRealTimeMessageReceived: " + bytesToHex(buf));
         if (buf[0] == 'F' || buf[0] == 'U') {
             // score update.
             byte[] tmp = new byte[4];
@@ -836,14 +841,10 @@ public class MainActivity extends Activity
             arraycopy(buf, 1, tmp, 0, 4);
             tmpValue = byteArrayToLeInt(tmp);
             GameEngine.mScoreHandler.setPeerScore(tmpValue);
-            Log.d("DEBUG", "PeerScore: " + bytesToHex(tmp));
-            Log.d("DEBUG", "PeerScore: " + GameEngine.mScoreHandler.getPeerScore());
             //Health
             arraycopy(buf, 5, tmp, 0, 4);
             tmpValue = byteArrayToLeInt(tmp);
             GameEngine.mScoreHandler.setPeerHealthPoint(tmpValue);
-            Log.d("DEBUG", "PeerHP: " + bytesToHex(tmp));
-            Log.d("DEBUG", "PeerHP: " + GameEngine.mScoreHandler.getPeerHealthPoint());
             //Attack
             arraycopy(buf, 9, tmp, 0, 4);
             tmpValue = byteArrayToLeInt(tmp);
@@ -913,18 +914,11 @@ public class MainActivity extends Activity
     {
         byte[] tmp;
         tmp = leIntToByteArray(mOwnScore);
-        Log.d("DEBUG", "mOwnScore: " + bytesToHex(tmp));
-        Log.d("DEBUG", "mOwnScore: " + mOwnScore);
         arraycopy(tmp, 0, mMsgBuf, 1, 4);
         tmp = leIntToByteArray(mOwnHealthPoint);
-        Log.d("DEBUG", "mOwnHealthPoint: " + bytesToHex(tmp));
-        Log.d("DEBUG", "mOwnHealthPoint: " + mOwnHealthPoint);
         arraycopy(tmp, 0, mMsgBuf, 5, 4);
         tmp = leIntToByteArray(mAttackPoint);
-        Log.d("DEBUG", "mAttackPoint: " + bytesToHex(tmp));
-        Log.d("DEBUG", "mAttackPoint: " + mAttackPoint);
         arraycopy(tmp, 0, mMsgBuf, 9, 4);
-        Log.d("DEBUG", "constructBroadcastPacket: " + bytesToHex(mMsgBuf));
     }
 
     void broadcast(){
@@ -938,7 +932,6 @@ public class MainActivity extends Activity
             Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
                     mRoomId, p.getParticipantId());
         }
-        Log.d(TAG, "broadcast");
     }
 
     /*
@@ -1057,22 +1050,22 @@ public class MainActivity extends Activity
     void checkForAchievements(int score) {
         // Check if each condition is met; if so, unlock the corresponding
         // achievement.
-        if (score >= 1000) {
+        if (score >= Configuration.ACHIEVEMENT_LEVEL_1_SCORE) {
             mOutbox.mLevel1Achievement = true;
         }
-        if (score >= 2000) {
+        if (score >= Configuration.ACHIEVEMENT_LEVEL_2_SCORE) {
             mOutbox.mLevel2Achievement = true;
         }
-        if (score >= 3000) {
+        if (score >= Configuration.ACHIEVEMENT_LEVEL_3_SCORE) {
             mOutbox.mLevel3Achievement = true;
         }
-        if (score >= 4000) {
+        if (score >= Configuration.ACHIEVEMENT_LEVEL_4_SCORE) {
             mOutbox.mLevel4Achievement = true;
         }
-        if (score >= 5000) {
+        if (score >= Configuration.ACHIEVEMENT_LEVEL_5_SCORE) {
             mOutbox.mLevel5Achievement = true;
         }
-        if (score >= 6000) {
+        if (score >= Configuration.ACHIEVEMENT_LEVEL_6_SCORE) {
             mOutbox.mLevel6Achievement = true;
         }
     }
@@ -1107,15 +1100,15 @@ public class MainActivity extends Activity
             Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_id_6));
             mOutbox.mLevel6Achievement = false;
         }
-        if (mOutbox.mEasyModeScore >= 0) {
+        if (mOutbox.mSinglePlayerModeScore >= 0) {
             Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_id_easy),
-                    mOutbox.mEasyModeScore);
-            mOutbox.mEasyModeScore = -1;
+                    mOutbox.mSinglePlayerModeScore);
+            mOutbox.mSinglePlayerModeScore = -1;
         }
-        if (mOutbox.mHardModeScore >= 0) {
+        if (mOutbox.mMultiPlayerModeScore >= 0) {
             Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_id_hard),
-                    mOutbox.mHardModeScore);
-            mOutbox.mHardModeScore = -1;
+                    mOutbox.mMultiPlayerModeScore);
+            mOutbox.mMultiPlayerModeScore = -1;
         }
         mOutbox.saveLocal(this);
     }
@@ -1126,10 +1119,10 @@ public class MainActivity extends Activity
      * @param finalScore The score the user got.
      */
     void updateLeaderboards(int finalScore) {
-        if (mHardMode && mOutbox.mHardModeScore < finalScore) {
-            mOutbox.mHardModeScore = finalScore;
-        } else if (!mHardMode && mOutbox.mEasyModeScore < finalScore) {
-            mOutbox.mEasyModeScore = finalScore;
+        if (mMultiplayer && mOutbox.mMultiPlayerModeScore < finalScore) {
+            mOutbox.mMultiPlayerModeScore = finalScore;
+        } else if (!mMultiplayer && mOutbox.mSinglePlayerModeScore < finalScore) {
+            mOutbox.mSinglePlayerModeScore = finalScore;
         }
     }
 
@@ -1140,13 +1133,13 @@ public class MainActivity extends Activity
         boolean mLevel4Achievement = false;
         boolean mLevel5Achievement = false;
         boolean mLevel6Achievement = false;
-        int mEasyModeScore = -1;
-        int mHardModeScore = -1;
+        int mSinglePlayerModeScore = -1;
+        int mMultiPlayerModeScore = -1;
 
         boolean isEmpty() {
             return !mLevel1Achievement && !mLevel3Achievement && !mLevel4Achievement &&
-                    !mLevel2Achievement && !mLevel5Achievement && !mLevel6Achievement && mEasyModeScore < 0 &&
-                    mHardModeScore < 0;
+                    !mLevel2Achievement && !mLevel5Achievement && !mLevel6Achievement && mSinglePlayerModeScore < 0 &&
+                    mMultiPlayerModeScore < 0;
         }
 
         public void saveLocal(Context ctx) {

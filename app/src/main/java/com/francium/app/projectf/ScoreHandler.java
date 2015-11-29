@@ -19,7 +19,7 @@ public class ScoreHandler {
     int mAttackPoint = 0;
 
     float mAwardRatio = 0;
-    int mContinueCnt = 0;
+    float mBonusCnt = 0;
     int mComboCnt = 0;
 
     int mOver3 = 0;
@@ -44,9 +44,8 @@ public class ScoreHandler {
         mOwnHealthPoint = Configuration.MAX_HEALTH_POINT;
 
         mAwardRatio = 0;
-        mContinueCnt = 0;
+        mBonusCnt = 0;
         mComboCnt = 0;
-
         mOver3 = 0;
     }
 
@@ -87,13 +86,19 @@ public class ScoreHandler {
                 }
                 break;
         }
-        awardScore(Math.pow((double) mComboCnt, 2) * mAwardRatio * award);
+        awardScore((mComboCnt + 1) * (mAwardRatio + 1) * award);
     }
 
     public void awardScore(double score) {
         mAwardScore = (int) score;
         mOwnScore += (int) score;
         isScoreUpdated = true;
+    }
+
+    public void increaseAwardRatio() {
+        mAwardRatio++;
+        if(mAwardRatio > Configuration.MAX_AWARD_RATIO)
+            mAwardRatio = Configuration.MAX_AWARD_RATIO;
     }
 
     public void setPeerScore(int score) {
@@ -184,12 +189,9 @@ public class ScoreHandler {
         mAttackPoint = 0;
         return temp;
     }
+
     public int getAward() {
         return mAwardScore;
-    }
-
-    public int getContinueCnt() {
-        return mContinueCnt;
     }
 
     public void resetCombo() {
@@ -202,32 +204,38 @@ public class ScoreHandler {
 
     public void reset() {
         mAwardRatio = 0;
-        mContinueCnt = 0;
+        mComboCnt = 0;
+        mBonusCnt = 0;
     }
 
-    public void increase() {
-        mAwardRatio++;
-        mContinueCnt++;
-    }
-
-    public void increase(int clearNum) {
-        mAwardRatio += (float) clearNum / 5;
+    public void increaseBonusCnt(){
+        mBonusCnt++;
     }
 
     public void calcTotal(int clearNum) {
+        boolean giveSpecialItem = false;
+        //Clear enough item
         if (clearNum > 3) {
             mOver3++;
             if (0 == (mOver3 % Configuration.AWARD_MAX_COUNT)) {
-                Message msg = new Message();
-                msg.what = GameEngine.GEN_SPECIAL_ITEM;
-                GameEngine.mHandler.sendMessage(msg);
+                giveSpecialItem = true;
             }
         }
+        // 3 or more combo
         if (mComboCnt > 2) {
+            mComboCnt = 0;
+            giveSpecialItem = true;
+        }
+        //
+        if(mBonusCnt > Configuration.BONUS_MAX_COUNT){
+            mBonusCnt -= Configuration.BONUS_MAX_COUNT;
+            giveSpecialItem = true;
+        }
+
+        if(giveSpecialItem == true) {
             Message msg = new Message();
             msg.what = GameEngine.GEN_SPECIAL_ITEM;
             GameEngine.mHandler.sendMessage(msg);
-            mComboCnt = 0;
         }
 //        Log.d("DEBUG", "combo: " + mComboCnt);
     }

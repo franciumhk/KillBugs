@@ -17,12 +17,23 @@ public class Configuration {
 
     public static int DELAY_MS = 20;
     public static int AWARD_MAX_COUNT = 5;
+    public static int BONUS_MAX_COUNT = 9;
     public static int MAX_TOKEN = 6;
     public static int NUMBER_OF_BUG = 8;
 
     public static int AUTOTIP_DELAY = 5 * 1000 / DELAY_MS;
-    public static int MAX_TIME = 3000;
+    public static int MAX_TIME = 0;
+    public static int MAX_TIME_SINGLE_PLAYER = 30;
+    public static int MAX_TIME_MULTIPLAYER = 180;
     public static int MAX_HEALTH_POINT = 10;
+    public static int MAX_AWARD_RATIO = 5;
+
+    public static int ACHIEVEMENT_LEVEL_1_SCORE = 2000;
+    public static int ACHIEVEMENT_LEVEL_2_SCORE = 4000;
+    public static int ACHIEVEMENT_LEVEL_3_SCORE = 6000;
+    public static int ACHIEVEMENT_LEVEL_4_SCORE = 8000;
+    public static int ACHIEVEMENT_LEVEL_5_SCORE = 10000;
+    public static int ACHIEVEMENT_LEVEL_6_SCORE = 12000;
 
     public static int MSG_SIZE = 16;
 
@@ -37,33 +48,21 @@ public class Configuration {
 
     public static int BUG_ID_ATTACK = BUG_ID_RED;
     public static int BUG_ID_HEAL = BUG_ID_GREEN;
+    public static int BUG_ID_AWARD = BUG_ID_YELLOW;
+    public static int BUG_ID_BONUS = BUG_ID_PURPLE;
 
     public static int COLOR_OWN_RESULT = Color.BLACK;
     public static int COLOR_PEER_RESULT = Color.BLACK;
 
     public enum E_SOUND {
         SLIDE,
-        FILL,
         DISAPPEAR3,
         DISAPPEAR4,
         DISAPPEAR5,
-        READYGO,
-        TIMEOVER,
-        LEVELUP,
         SUPER,
-        COOL,
-        GOOD,
-        PERFECT,
         SPECIALITEM,
-        LIFEADD,
-        LIFEDEL,
-        INVALID
-    }
-
-    public enum E_TIP {
-        READYGO,
-        LEVELUP,
-        GAMEOVER,
+        INVALID,
+        END
     }
 
     public enum E_SCENARIO {

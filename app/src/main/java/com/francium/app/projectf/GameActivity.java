@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.WindowManager;
 
 public class GameActivity extends AppCompatActivity {
-//    GameGLSurfaceView mGLSurfaceView;
     private MediaPlayer mp;
 
     /**
@@ -22,24 +21,17 @@ public class GameActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
-//        mGLSurfaceView = new GameGLSurfaceView(this);
-//        setContentView(mGLSurfaceView);
-//        mGLSurfaceView.requestFocus();
-//        mGLSurfaceView.setFocusableInTouchMode(true);
     }
 
     @Override
     protected void onStart() {
         Log.d("DEBUG", "onStart");
         super.onStart();
-//        GameEngine.mScoreHandler.init();
-//        GameEngine.mTimeHandler.reset();
-//        GameEngine.init(0);
-//        if (mp == null) {
-//            mp = MediaPlayer.create(this, R.raw.s_background);
-//            mp.setLooping(true);
-//            mp.start();
-//        }
+        if (mp == null) {
+            mp = MediaPlayer.create(this, R.raw.s_background);
+            mp.setLooping(true);
+            mp.start();
+        }
     }
 
     @Override
@@ -53,8 +45,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d("DEBUG", "onResume");
         super.onResume();
-//        mGLSurfaceView.onResume();
-//        mp.start();
+        mp.start();
         GameEngine.mTimeHandler.resume();
     }
 
@@ -62,8 +53,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onPause() {
         Log.d("DEBUG", "onPause");
         super.onPause();
-//        mGLSurfaceView.onPause();
-//        mp.pause();
+        mp.pause();
         GameEngine.mTimeHandler.pause();
     }
 
@@ -71,7 +61,7 @@ public class GameActivity extends AppCompatActivity {
     public void onDestroy() {
         Log.d("DEBUG", "onDestroy");
         super.onDestroy();
-//        mp.stop();
+        mp.stop();
     }
 
     @Override
