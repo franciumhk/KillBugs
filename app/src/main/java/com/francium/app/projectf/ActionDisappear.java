@@ -14,7 +14,7 @@ public class ActionDisappear extends ActionBasic{
 		if (!mStop)
 		{
 			mTimeCnt++;
-			if (1 == (mTimeCnt % 5)) return;		//??
+			if (1 == (mTimeCnt % 5)) return;
 			mCount--;
 			if(0 == mCount)
 			{

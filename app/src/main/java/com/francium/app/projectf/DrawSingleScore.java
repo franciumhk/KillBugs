@@ -99,7 +99,7 @@ public class DrawSingleScore {
 
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
         paint.setTextSize(mFontSize);
-        paint.setColor(Color.YELLOW);
+        paint.setColor(Configuration.COLOR_UNIT_SCORE);
         String str = Integer.toString(score);
         canvas.drawText(str, 20, 28, paint);
 
@@ -108,7 +108,6 @@ public class DrawSingleScore {
 
     public void draw(GL10 gl, int col, int row, int score) {
         if (!action.isRun()) return;
-
         Bitmap bmp = genBitmap(score);
         bindTexture(gl, bmp);
         ActionSingleScore mAction = (ActionSingleScore) action;

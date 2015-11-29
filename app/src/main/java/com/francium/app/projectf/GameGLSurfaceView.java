@@ -102,7 +102,11 @@ public class GameGLSurfaceView extends GLSurfaceView {
             Configuration.REAL_HEIGHT = height;
             Configuration.translateRatio = (float) width / height;
             Configuration.screentRatio = (float) width / height;
-            Configuration.ADP_SIZE = Configuration.UNIT_SIZE * Configuration.VIEW_HEIGHT / height * width / Configuration.VIEW_WIDTH;
+            Configuration.ADP_SIZE = Configuration.UNIT_SIZE
+                                    * Configuration.VIEW_HEIGHT
+                                    / height
+                                    * width
+                                    / Configuration.VIEW_WIDTH;
 
 //            Log.d("DEBUG", "REAL_WIDTH:" + Configuration.REAL_WIDTH);
 //            Log.d("DEBUG", "REAL_HEIGHT:" + Configuration.REAL_HEIGHT);

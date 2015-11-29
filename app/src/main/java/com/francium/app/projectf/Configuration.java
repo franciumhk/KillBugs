@@ -28,12 +28,12 @@ public class Configuration {
     public static int MAX_HEALTH_POINT = 10;
     public static int MAX_AWARD_RATIO = 5;
 
-    public static int ACHIEVEMENT_LEVEL_1_SCORE = 2000;
-    public static int ACHIEVEMENT_LEVEL_2_SCORE = 4000;
-    public static int ACHIEVEMENT_LEVEL_3_SCORE = 6000;
-    public static int ACHIEVEMENT_LEVEL_4_SCORE = 8000;
-    public static int ACHIEVEMENT_LEVEL_5_SCORE = 10000;
-    public static int ACHIEVEMENT_LEVEL_6_SCORE = 12000;
+    public static int ACHIEVEMENT_LEVEL_1_SCORE = 3000;
+    public static int ACHIEVEMENT_LEVEL_2_SCORE = 6000;
+    public static int ACHIEVEMENT_LEVEL_3_SCORE = 9000;
+    public static int ACHIEVEMENT_LEVEL_4_SCORE = 12000;
+    public static int ACHIEVEMENT_LEVEL_5_SCORE = 15000;
+    public static int ACHIEVEMENT_LEVEL_6_SCORE = 18000;
 
     public static int MSG_SIZE = 16;
 
@@ -53,6 +53,7 @@ public class Configuration {
 
     public static int COLOR_OWN_RESULT = Color.BLACK;
     public static int COLOR_PEER_RESULT = Color.BLACK;
+    public static int COLOR_UNIT_SCORE = Color.BLACK;
 
     public enum E_SOUND {
         SLIDE,

@@ -139,7 +139,7 @@ public class GameEngine {
     }
 
     static int getRandom() {
-        int data = randomGenerator.nextInt(7) + 1;
+        int data = randomGenerator.nextInt((int)Configuration.GRID_NUM) + 1;
         return data;
     }
 
@@ -154,18 +154,18 @@ public class GameEngine {
                     || (picId == pic[col + 1][row] && picId == pic[col + 2][row])) {
                 return true;
             }
-        } else if (col > 1 && col < 5) {
+        } else if (col > 1 && col < (Configuration.GRID_NUM - 2)) {
             if ((picId == pic[col - 2][row] && picId == pic[col - 1][row])
                     || (picId == pic[col - 1][row] && picId == pic[col + 1][row])
                     || (picId == pic[col + 1][row] && picId == pic[col + 2][row])) {
                 return true;
             }
-        } else if (5 == col) {
+        } else if ((Configuration.GRID_NUM - 2) == col) {
             if ((picId == pic[col - 2][row] && picId == pic[col - 1][row])
                     || (picId == pic[col - 1][row] && picId == pic[col + 1][row])) {
                 return true;
             }
-        } else if (6 == col) {
+        } else if ((Configuration.GRID_NUM - 1) == col) {
             if (picId == pic[col - 1][row] && picId == pic[col - 2][row]) {
                 return true;
             }
@@ -184,18 +184,18 @@ public class GameEngine {
                     || (picId == pic[col][row + 1] && picId == pic[col][row + 2])) {
                 return true;
             }
-        } else if (row > 1 && row < 5) {
+        } else if (row > 1 && row < (Configuration.GRID_NUM - 2)) {
             if ((picId == pic[col][row - 2] && picId == pic[col][row - 1])
                     || (picId == pic[col][row - 1] && picId == pic[col][row + 1])
                     || (picId == pic[col][row + 1] && picId == pic[col][row + 2])) {
                 return true;
             }
-        } else if (5 == row) {
+        } else if ((Configuration.GRID_NUM - 2) == row) {
             if ((picId == pic[col][row - 2] && picId == pic[col][row - 1])
                     || (picId == pic[col][row - 1] && picId == pic[col][row + 1])) {
                 return true;
             }
-        } else if (6 == row) {
+        } else if ((Configuration.GRID_NUM - 1) == row) {
             if (picId == pic[col][row - 1] && picId == pic[col][row - 2]) {
                 return true;
             }
@@ -303,6 +303,7 @@ public class GameEngine {
         for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {
             for (int j = 0; j < (int) Configuration.GRID_NUM; j++) {
                 if (isInLine(mBugItemPic, i, j) && -1 == mDisappearToken[i][j]) {
+                    setSingleScorePosition(i, j);
                     mEffect[i][j] = EFT_DISAPPEAR;
                     mDisappearToken[i][j] = token;
                     markCount++;
@@ -337,6 +338,7 @@ public class GameEngine {
             if (drawDisappear != null) {
                 drawDisappear.action.setToken(token);
                 drawDisappear.action.start();
+                drawSingleScore.action.start();
             }
             mScoreHandler.increaseCombo();
             mScoreHandler.calcTotal(markCount);
@@ -446,10 +448,10 @@ public class GameEngine {
 
     static void exchange(int pic[][], int col1, int row1, int col2, int row2) {
 
-        if (col1 < 0 || col1 > 6) return;
-        if (col2 < 0 || col2 > 6) return;
-        if (row1 < 0 || row1 > 6) return;
-        if (row2 < 0 || row2 > 6) return;
+        if (col1 < 0 || col1 > (Configuration.GRID_NUM - 1)) return;
+        if (col2 < 0 || col2 > (Configuration.GRID_NUM - 1)) return;
+        if (row1 < 0 || row1 > (Configuration.GRID_NUM - 1)) return;
+        if (row2 < 0 || row2 > (Configuration.GRID_NUM - 1)) return;
         int picId = pic[col1][row1];
         pic[col1][row1] = pic[col2][row2];
         pic[col2][row2] = picId;
@@ -817,6 +819,7 @@ public class GameEngine {
                     break;
                 }
                 case FILL_END: {
+                    Log.d("DEBUG", "FILL_END");
                     unMark(EFT_FILL);
                     if (isNeedFill()) {
                         markFill();
@@ -831,6 +834,7 @@ public class GameEngine {
                         }
                     }
                     clearAutoTip();
+                    Log.d("DEBUG", "FILL_END - checkPossibleMove");
                     checkPossibleMove();
                     if (mScoreHandler.isScoreUpdated == true)
                         mUpdatePeer = true;
@@ -842,7 +846,6 @@ public class GameEngine {
                     int token = b.getInt("token");
                     int col = b.getInt("col1");
                     int row = b.getInt("row1");
-                    setSingleScorePosition(col, row);
                     markSpecialBugItem(token, col, row);
                     break;
                 case GEN_SPECIAL_ITEM:
@@ -977,6 +980,7 @@ public class GameEngine {
         int col1Width = 40;
         int col2Width = 0;
         int fontSize = 28;
+        drawSingleScore.draw(gl, mSingleScoreW, mSingleScoreH, mScoreHandler.getAward());
         if (MainActivity.mMultiplayer) {
             drawString.draw(gl,
                     "Enemy:",
@@ -1028,7 +1032,6 @@ public class GameEngine {
                 line4Height,
                 Color.BLACK
         );
-        drawSingleScore.draw(gl, mSingleScoreW, mSingleScoreH, mScoreHandler.getAward());
         for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {
             for (int j = 0; j < (int) Configuration.GRID_NUM; j++) {
                 switch (mEffect[i][j]) {
