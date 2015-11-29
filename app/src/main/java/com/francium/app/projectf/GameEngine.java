@@ -98,14 +98,7 @@ public class GameEngine {
         init();
     }
 
-    public static void init() {
-        mScoreHandler.init();
-        mTimeHandler.reset();
-        previousExchangeCol1 = 0;
-        previousExchangeRow1 = 0;
-        previousExchangeCol2 = 0;
-        previousExchangeRow2 = 0;
-        initRandom(mRandomSeed);
+    public static void randomizeItem(){
         for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {
             for (int j = 0; j < (int) Configuration.GRID_NUM; j++) {
                 mBugItemPic[i][j] = getRandom();
@@ -116,6 +109,17 @@ public class GameEngine {
                 mDisappearToken[i][j] = -1;
             }
         }
+    }
+
+    public static void init() {
+        mScoreHandler.init();
+        mTimeHandler.reset();
+        previousExchangeCol1 = 0;
+        previousExchangeRow1 = 0;
+        previousExchangeCol2 = 0;
+        previousExchangeRow2 = 0;
+        initRandom(mRandomSeed);
+        randomizeItem();
     }
 
     public static void setRandomSeed(long seed) {
@@ -309,19 +313,15 @@ public class GameEngine {
                     markCount++;
                     if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK){
                         mScoreHandler.increaseAttackPoint(1);
-                        Log.d("DEBUG", "Attack!!!");
                     }
                     if (mBugItemPic[i][j] == Configuration.BUG_ID_HEAL) {
                         mScoreHandler.increaseOwnHealth(1);
-                        Log.d("DEBUG", "Heal!!!");
                     }
                     if (mBugItemPic[i][j] == Configuration.BUG_ID_AWARD) {
                         mScoreHandler.increaseAwardRatio();
-                        Log.d("DEBUG", "Award!!!");
                     }
                     if (mBugItemPic[i][j] == Configuration.BUG_ID_BONUS) {
                         mScoreHandler.increaseBonusCnt();
-                        Log.d("DEBUG", "Bonus!!!");
                     }
                 }
             }
@@ -514,7 +514,6 @@ public class GameEngine {
     }
 
     static void checkPossibleMove(){
-        Log.d("DEBUG", "checkPossibleMove");
         for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {
             for (int j = 0; j < (int) Configuration.GRID_NUM; j++) {
                 mPicBak[i][j] = mBugItemPic[i][j];
@@ -527,7 +526,7 @@ public class GameEngine {
                 }
             }
         }
-        init();
+        randomizeItem();
         Message msg = new Message();
         msg.what = GameEngine.FILL_END;
         GameEngine.mHandler.sendMessage(msg);
@@ -576,11 +575,9 @@ public class GameEngine {
 
     static void markSpecialBugItem(int token, int col, int row) {
         if (iSpecialBugItem(col, row)) {
-            Log.d("DEBUG", "markSpecialBugItem: SPECIALITEM");
             mSoundHandler.play(Configuration.E_SOUND.SPECIALITEM);
             markSpecialItem(token, col, row);
         } else {
-            Log.d("DEBUG", "free token!~ markSpecialBugItem");
             freeToken(token);
         }
     }
@@ -608,7 +605,6 @@ public class GameEngine {
     }
 
     static void genSpecialBugItem() {
-        Log.d("DEBUG", "genSpecialBugItem");
         int cnt = 0;
         int data = (int) (Math.random() * 1000);
         data = (data % ((int) Configuration.GRID_NUM * (int) Configuration.GRID_NUM));
@@ -624,7 +620,6 @@ public class GameEngine {
             cnt++;
             if (cnt > 10) break;
         }
-        Log.d("DEBUG", "genSpecialBugItem : SPECIAL_ITEM");
         mBugItemPic[x][y] = SPECIAL_ITEM;
     }
 
@@ -759,7 +754,6 @@ public class GameEngine {
             switch (msg.what) {
                 case EXCHANGE_START: {
                     isBusy = true;
-                    Log.d("DEBUG", "EXCHANGE_START");
                     mSoundHandler.play(Configuration.E_SOUND.SLIDE);
                     clearAutoTip();
                     Bundle b = msg.getData();
@@ -786,7 +780,6 @@ public class GameEngine {
                     break;
                 }
                 case EXCHANGE_END: {
-                    Log.d("DEBUG", "EXCHANGE_END");
                     Bundle b = msg.getData();
                     int token = b.getInt("token");
                     int col1 = b.getInt("col1");
@@ -801,7 +794,6 @@ public class GameEngine {
                     break;
                 }
                 case GAME_START:{
-                    Log.d("DEBUG", "GAME_START");
                     mScene = E_SCENARIO.GAME;
                     mTimeHandler.start();
                     checkPossibleMove();
@@ -819,7 +811,6 @@ public class GameEngine {
                     break;
                 }
                 case FILL_END: {
-                    Log.d("DEBUG", "FILL_END");
                     unMark(EFT_FILL);
                     if (isNeedFill()) {
                         markFill();
@@ -834,14 +825,12 @@ public class GameEngine {
                         }
                     }
                     clearAutoTip();
-                    Log.d("DEBUG", "FILL_END - checkPossibleMove");
                     checkPossibleMove();
                     if (mScoreHandler.isScoreUpdated == true)
                         mUpdatePeer = true;
                     break;
                 }
                 case SCREEN_TOUCH:
-                    Log.d("DEBUG", "SCREEN_TOUCH");
                     Bundle b = msg.getData();
                     int token = b.getInt("token");
                     int col = b.getInt("col1");
@@ -849,11 +838,9 @@ public class GameEngine {
                     markSpecialBugItem(token, col, row);
                     break;
                 case GEN_SPECIAL_ITEM:
-                    Log.d("DEBUG", "GEN_SPECIAL_ITEM");
                     genSpecialBugItem();
                     break;
                 case GAME_OVER: {
-                    Log.d("DEBUG", "GAME_OVER");
                     mSoundHandler.play(Configuration.E_SOUND.END);
                     mScoreHandler.setFinalOwnScore(mScoreHandler.getOwnScore());
                     mScoreHandler.setFinalOwnHealthPoint(mScoreHandler.getOwnHealthPoint());
@@ -885,23 +872,27 @@ public class GameEngine {
         String healthPoint = "----";
         String result = "Wait...";
         boolean isWin = false;
-        int resultColor;
+        int resultColor = Color.GRAY;
         if (MainActivity.mMultiplayer) {
-            if (mScoreHandler.getFinalPeerScore() >= 0) {
-                score = Integer.toString(mScoreHandler.getFinalPeerScore());
-                healthPoint = Integer.toString(mScoreHandler.getFinalPeerHealthPoint());
-                if (mScoreHandler.getFinalOwnHealthPoint() > 0){
-                    if (mScoreHandler.getFinalOwnScore() >= mScoreHandler.getFinalPeerScore()) {
-                        isWin = true;
+            if ((mScoreHandler.getFinalPeerScore() >= 0)) {
+                if (mScoreHandler.getFinalPeerScore() > 0) {
+                    score = Integer.toString(mScoreHandler.getFinalPeerScore());
+                    healthPoint = Integer.toString(mScoreHandler.getFinalPeerHealthPoint());
+                    if (mScoreHandler.getFinalOwnHealthPoint() > 0) {
+                        if (mScoreHandler.getFinalOwnScore() >= mScoreHandler.getFinalPeerScore()) {
+                            isWin = true;
+                        }
                     }
+                } else {
+                    isWin = true;
                 }
-            }
-            if (isWin){
-                result = "WIN!";
-                resultColor = Color.RED;
-            } else {
-                result = "LOSE";
-                resultColor = Color.GRAY;
+                if (isWin) {
+                    result = "WIN!";
+                    resultColor = Color.RED;
+                } else {
+                    result = "LOSE";
+                    resultColor = Color.GRAY;
+                }
             }
             drawString.draw(gl,
                     result,
@@ -973,63 +964,52 @@ public class GameEngine {
     }
 
     public void drawGameScene(GL10 gl) {
-        int line1Height = -72;
-        int line2Height = -64;
-        int line3Height = -56;
-        int line4Height = -48;
+        int topLine1Height = -64;
+        int topLine2Height = -56;
+
+        int bottomLine1Height = 64;
+
         int col1Width = 40;
-        int col2Width = 0;
+        int col2Width = 10;
         int fontSize = 28;
         drawSingleScore.draw(gl, mSingleScoreW, mSingleScoreH, mScoreHandler.getAward());
         if (MainActivity.mMultiplayer) {
             drawString.draw(gl,
-                    "Enemy:",
+                    "P2 HP: " + Integer.toString(mScoreHandler.getPeerHealthPoint()),
                     fontSize,
-                    col2Width,
-                    line1Height,
-                    Color.BLACK
+                    col1Width,
+                    topLine2Height,
+                    Configuration.COLOR_PEER_SCORE
             );
             drawString.draw(gl,
                     "Score: " + Integer.toString(mScoreHandler.getPeerScore()),
                     fontSize,
                     col2Width,
-                    line2Height,
-                    Color.BLACK
+                    topLine2Height,
+                    Configuration.COLOR_PEER_SCORE
             );
             drawString.draw(gl,
-                    "HP: " + Integer.toString(mScoreHandler.getPeerHealthPoint()),
-                    fontSize,
-                    col2Width,
-                    line3Height,
-                    Color.BLACK
-            );
-            drawString.draw(gl,
-                    "You:",
+                    "P1 HP: " + Integer.toString(mScoreHandler.getOwnHealthPoint()),
                     fontSize,
                     col1Width,
-                    line1Height,
-                    Color.BLACK
+                    topLine1Height,
+                    Configuration.COLOR_OWN_SCORE
             );
         }
-        drawString.draw(gl,
-                "Score: " + Integer.toString(mScoreHandler.getOwnScore()),
-                fontSize,
-                col1Width,
-                line2Height,
-                Color.BLACK
-        );
-        drawString.draw(gl,
-                "HP: " + Integer.toString(mScoreHandler.getOwnHealthPoint()),
-                fontSize,
-                col1Width,
-                line3Height,
-                Color.BLACK
-        );
+        else {
+            drawString.draw(gl,
+                    "Score: " + Integer.toString(mScoreHandler.getOwnScore()),
+                    fontSize,
+                    col1Width,
+                    topLine1Height,
+                    Configuration.COLOR_OWN_SCORE
+            );
+        }
         drawString.draw(gl,
                 "Time Left: " + Integer.toString(mTimeHandler.getTimeLeft()),
                 fontSize,
                 col1Width,
-                line4Height,
+                bottomLine1Height,
                 Color.BLACK
         );
         for (int i = 0; i < (int) Configuration.GRID_NUM; i++) {

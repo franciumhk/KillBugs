@@ -1,7 +1,6 @@
 package com.francium.app.projectf;
 
 import android.os.Message;
-import android.util.Log;
 
 public class ScoreHandler {
     int mOwnScore = 0;
@@ -90,6 +89,8 @@ public class ScoreHandler {
     }
 
     public void awardScore(double score) {
+        if (score > Configuration.MAX_SINGLE_SCORE)
+            score = Configuration.MAX_SINGLE_SCORE;
         mAwardScore = (int) score;
         mOwnScore += (int) score;
         isScoreUpdated = true;
@@ -137,7 +138,6 @@ public class ScoreHandler {
         mOwnHealthPoint += healthPoint;
         if (mOwnHealthPoint > Configuration.MAX_HEALTH_POINT)
             mOwnHealthPoint = Configuration.MAX_HEALTH_POINT;
-        Log.d("DEBUG", "increaseOwnHealth: " + mOwnHealthPoint);
     }
 
     public void decreaseOwnHealth(int healthPoint) {
@@ -148,7 +148,6 @@ public class ScoreHandler {
             msg.what = GameEngine.GAME_OVER;
             GameEngine.mHandler.sendMessage(msg);
         }
-        Log.d("DEBUG", "decreaseOwnHealth: " + mOwnHealthPoint);
     }
 
     public void setPeerHealthPoint(int healthPoint) {
@@ -185,7 +184,6 @@ public class ScoreHandler {
 
     public int getAttackPoint() {
         int temp = mAttackPoint;
-        Log.d("DEBUG", "Attack: " + temp);
         mAttackPoint = 0;
         return temp;
     }
@@ -226,7 +224,7 @@ public class ScoreHandler {
             mComboCnt = 0;
             giveSpecialItem = true;
         }
-        //
+        // Bonus
         if(mBonusCnt > Configuration.BONUS_MAX_COUNT){
             mBonusCnt -= Configuration.BONUS_MAX_COUNT;
             giveSpecialItem = true;
@@ -237,7 +235,6 @@ public class ScoreHandler {
             msg.what = GameEngine.GEN_SPECIAL_ITEM;
             GameEngine.mHandler.sendMessage(msg);
         }
-//        Log.d("DEBUG", "combo: " + mComboCnt);
     }
 
 }
