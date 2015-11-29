@@ -34,10 +34,8 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static java.lang.System.arraycopy;
@@ -70,7 +68,6 @@ public class MainActivity extends Activity
 
     // Request code used to invoke sign in user interactions.
     private static final int RC_SIGN_IN = 9001;
-    private static final int RC_RESOLVE = 5000;
     private static final int RC_UNUSED = 5001;
 
     // playing on hard mode?
@@ -109,7 +106,14 @@ public class MainActivity extends Activity
     String mIncomingInvitationId = null;
 
     // Message buffer for sending messages
-    byte[] mMsgBuf = new byte[5];
+    //[0] = cmd id
+    //[1] - [4] = own score
+    //[5] - [8] = own health point
+    //[9] - [12] = attack point
+    byte[] mMsgBuf = new byte[Configuration.MSG_SIZE];
+    int mOwnScore = 0;
+    int mOwnHealthPoint = 0;
+    int mAttackPoint = 0;
 
     static boolean isGameRunning = false;
 
@@ -142,10 +146,6 @@ public class MainActivity extends Activity
 
         mGLSurfaceView.requestFocus();
         mGLSurfaceView.setFocusableInTouchMode(true);
-
-//        GameEngine.mScoreHandler.init();
-//        GameEngine.mTimeHandler.reset();
-//        GameEngine.init(0);
     }
 
     @Override
@@ -631,7 +631,6 @@ public class MainActivity extends Activity
 
     @Override
     public void onPeerJoined(Room room, List<String> arg1) {
-        Log.d(TAG, "onPeerJoined(" + ", " + room + ")");
         updateRoom(room);
     }
 
@@ -652,8 +651,6 @@ public class MainActivity extends Activity
 
     @Override
     public void onPeersConnected(Room room, List<String> peers) {
-        Log.d(TAG, "onPeerJoined(" + ", " + room + ")");
-        Log.d(TAG, "peers:" + peers);
         mPeerParticipantID = peers.get(0);
         updateRoom(room);
     }
@@ -670,7 +667,7 @@ public class MainActivity extends Activity
             Log.d(TAG, "roomId:" + roomId);
         }
         if (mParticipants != null) {
-            updatePeerScores(false);
+//            updatePeerStatus();
         }
     }
 
@@ -685,7 +682,6 @@ public class MainActivity extends Activity
     // Reset game variables in preparation for a new game.
     void resetGameVars() {
         mSecondsLeft = GAME_DURATION;
-        mParticipantScore.clear();
         mFinishedParticipants.clear();
     }
 
@@ -716,32 +712,24 @@ public class MainActivity extends Activity
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
-        Log.d("DEBUG", "mOwnParticipantID: "+ mOwnParticipantID);
-        Log.d("DEBUG", "mPeerParticipantID: "+ mPeerParticipantID);
         long seed = 0;
         int length = ownID.length < peerID.length ? peerID.length : ownID.length;
         length += 7;
         length /=8;
         length *= 8;
         byte[] combineID = new byte[length];
-        Log.d("DEBUG", "combineID: "+ combineID.toString());
         for (int i = 0; i < length; i++){
             if (i < ownID.length)
                 combineID[i] += ownID[i];
             if (i < peerID.length)
                 combineID[i] += peerID[i];
         }
-        Log.d("DEBUG", "combineID: "+ combineID.toString());
-
         for (int i = 8; i < length; i+=8){
             for (int j = 0; j < 8; j++) {
                 combineID[j] += combineID[j+i];
             }
         }
-        Log.d("DEBUG", "combineID: "+ combineID.toString());
         seed = byteArrayToLeLong(combineID);
-        Log.d("DEBUG", "seed: "+ seed);
         return seed;
     }
 
@@ -750,8 +738,8 @@ public class MainActivity extends Activity
     void startGame(final boolean multiplayer) {
         Log.d(TAG, "startGame");
         mMultiplayer = multiplayer;
-        updatePeerScores(false);
-        broadcastScore(false);
+//        updatePeerStatus();
+        broadcastStatus();
 
         if (multiplayer == true) {
             GameEngine.setRandomSeed(generateRandomSeed());
@@ -777,11 +765,11 @@ public class MainActivity extends Activity
                     try {
                         if (GameEngine.mUpdatePeer == true) {
                             GameEngine.mUpdatePeer = false;
-                            broadcastScore(false);
+                            broadcastStatus();
                         }
                         if (GameEngine.mFinalScore == true) {
                             GameEngine.mFinalScore = false;
-                            broadcastScore(true);
+                            broadcastResult();
                             submitScore(GameEngine.mScoreHandler.getFinalOwnScore());
                         }
                         Thread.sleep(Configuration.DELAY_MS);
@@ -798,11 +786,6 @@ public class MainActivity extends Activity
      * COMMUNICATIONS SECTION. Methods that implement the game's network
      * protocol.
      */
-
-    // Score of other participants. We update this as we receive their scores
-    // from the network.
-    Map<String, Integer> mParticipantScore = new HashMap<String, Integer>();
-
     // Participants who sent us their final score.
     Set<String> mFinishedParticipants = new HashSet<String>();
 
@@ -844,51 +827,104 @@ public class MainActivity extends Activity
     public void onRealTimeMessageReceived(RealTimeMessage rtm) {
         byte[] buf = rtm.getMessageData();
         String sender = rtm.getSenderParticipantId();
-        String msg = bytesToHex(buf);
+        Log.d("DEBUG", "onRealTimeMessageReceived: " + bytesToHex(buf));
         if (buf[0] == 'F' || buf[0] == 'U') {
             // score update.
-            int existingScore = mParticipantScore.containsKey(sender) ?
-                    mParticipantScore.get(sender) : 0;
             byte[] tmp = new byte[4];
+            int tmpValue;
+            //Score
             arraycopy(buf, 1, tmp, 0, 4);
-            int thisScore = byteArrayToLeInt(tmp);
-            if (thisScore > existingScore) {
-                mParticipantScore.put(sender, thisScore);
-                updatePeerScores(false);
+            tmpValue = byteArrayToLeInt(tmp);
+            GameEngine.mScoreHandler.setPeerScore(tmpValue);
+            Log.d("DEBUG", "PeerScore: " + bytesToHex(tmp));
+            Log.d("DEBUG", "PeerScore: " + GameEngine.mScoreHandler.getPeerScore());
+            //Health
+            arraycopy(buf, 5, tmp, 0, 4);
+            tmpValue = byteArrayToLeInt(tmp);
+            GameEngine.mScoreHandler.setPeerHealthPoint(tmpValue);
+            Log.d("DEBUG", "PeerHP: " + bytesToHex(tmp));
+            Log.d("DEBUG", "PeerHP: " + GameEngine.mScoreHandler.getPeerHealthPoint());
+            //Attack
+            arraycopy(buf, 9, tmp, 0, 4);
+            tmpValue = byteArrayToLeInt(tmp);
+            if (tmpValue > 0) {
+                GameEngine.mScoreHandler.decreaseOwnHealth(tmpValue);
+                broadcastStatus();
             }
 
             // if it's a final score, mark this participant as having finished
             // the game
             if ((char) buf[0] == 'F') {
-                updatePeerScores(true);
+                //Score
+                arraycopy(buf, 1, tmp, 0, 4);
+                tmpValue = byteArrayToLeInt(tmp);
+                GameEngine.mScoreHandler.setFinalPeerScore(tmpValue);
+                //Health
+                arraycopy(buf, 5, tmp, 0, 4);
+                tmpValue = byteArrayToLeInt(tmp);
+                GameEngine.mScoreHandler.setFinalPeerHealthPoint(tmpValue);
+
+                if (GameEngine.mScene != Configuration.E_SCENARIO.RESULT){
+                    Message msg = new Message();
+                    msg.what = GameEngine.GAME_OVER;
+                    GameEngine.mHandler.sendMessage(msg);
+                }
+
                 mFinishedParticipants.add(rtm.getSenderParticipantId());
             }
         }
     }
 
     // Broadcast my score to everybody else.
-    void broadcastScore(boolean finalScore) {
+    void broadcastStatus() {
         if (!mMultiplayer)
             return; // playing single-player mode
 
+        mMsgBuf = new byte[Configuration.MSG_SIZE];
         // First byte in message indicates whether it's a final score or not
-        mMsgBuf[0] = (byte) (finalScore ? 'F' : 'U');
+        mMsgBuf[0] = (byte)'U';
 
         // Second byte is the score.
-        int score;
-        if (finalScore == true) {
-            score = GameEngine.mScoreHandler.getFinalOwnScore();
-        }
-        else {
-            score = GameEngine.mScoreHandler.getOwnScore();
-        }
-        byte[] tmp = leIntToByteArray(score);
-        arraycopy(tmp, 0, mMsgBuf, 1, 4);
+        mOwnScore = GameEngine.mScoreHandler.getOwnScore();
+        mOwnHealthPoint = GameEngine.mScoreHandler.getOwnHealthPoint();
+        mAttackPoint = GameEngine.mScoreHandler.getAttackPoint();
 
-//        String msg = bytesToHex(mMsgBuf);
-//        Log.d(STAG, "broadcastScore Hex: " + msg);
-
+        constructBroadcastPacket();
         broadcast();
+    }
+    // Broadcast my score to everybody else.
+    void broadcastResult() {
+        if (!mMultiplayer)
+            return; // playing single-player mode
+
+        mMsgBuf = new byte[Configuration.MSG_SIZE];
+        // First byte in message indicates whether it's a final score or not
+        mMsgBuf[0] = (byte)'F';
+
+        // Second byte is the score.
+        mOwnScore = GameEngine.mScoreHandler.getFinalOwnScore();
+        mOwnHealthPoint = GameEngine.mScoreHandler.getFinalOwnHealthPoint();
+        mAttackPoint = GameEngine.mScoreHandler.getAttackPoint();
+
+        constructBroadcastPacket();
+        broadcast();
+    }
+    void constructBroadcastPacket()
+    {
+        byte[] tmp;
+        tmp = leIntToByteArray(mOwnScore);
+        Log.d("DEBUG", "mOwnScore: " + bytesToHex(tmp));
+        Log.d("DEBUG", "mOwnScore: " + mOwnScore);
+        arraycopy(tmp, 0, mMsgBuf, 1, 4);
+        tmp = leIntToByteArray(mOwnHealthPoint);
+        Log.d("DEBUG", "mOwnHealthPoint: " + bytesToHex(tmp));
+        Log.d("DEBUG", "mOwnHealthPoint: " + mOwnHealthPoint);
+        arraycopy(tmp, 0, mMsgBuf, 5, 4);
+        tmp = leIntToByteArray(mAttackPoint);
+        Log.d("DEBUG", "mAttackPoint: " + bytesToHex(tmp));
+        Log.d("DEBUG", "mAttackPoint: " + mAttackPoint);
+        arraycopy(tmp, 0, mMsgBuf, 9, 4);
+        Log.d("DEBUG", "constructBroadcastPacket: " + bytesToHex(mMsgBuf));
     }
 
     void broadcast(){
@@ -902,6 +938,7 @@ public class MainActivity extends Activity
             Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
                     mRoomId, p.getParticipantId());
         }
+        Log.d(TAG, "broadcast");
     }
 
     /*
@@ -957,26 +994,6 @@ public class MainActivity extends Activity
         }
         else {
             switchToScreen(R.id.screen_sign_in);
-        }
-    }
-
-    void updatePeerScores(boolean isFinal) {
-        if (mRoomId != null) {
-            for (Participant p : mParticipants) {
-                String pid = p.getParticipantId();
-                if (pid.equals(mOwnParticipantID))
-                    continue;
-                if (p.getStatus() != Participant.STATUS_JOINED)
-                    continue;
-                int score = mParticipantScore.containsKey(pid) ? mParticipantScore.get(pid) : 0;
-                Log.d(STAG, "setPeerScore: " + score);
-                if (isFinal == true) {
-                    GameEngine.mScoreHandler.setFinalPeerScore(score);
-                }
-                else {
-                    GameEngine.mScoreHandler.setPeerScore(score);
-                }
-            }
         }
     }
 

@@ -310,6 +310,14 @@ public class GameEngine {
                     mEffect[i][j] = EFT_DISAPPEAR;
                     mDisappearToken[i][j] = token;
                     markCount++;
+                    if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK){
+                        mScoreHandler.increaseAttackPoint(1);
+                        Log.d("DEBUG", "Attack!!!");
+                    }
+                    if (mBugItemPic[i][j] == Configuration.BUG_ID_HEAL) {
+                        mScoreHandler.increaseOwnHealth(1);
+                        Log.d("DEBUG", "Heal!!!");
+                    }
                 }
             }
         }
@@ -332,9 +340,9 @@ public class GameEngine {
             mScoreHandler.increaseCombo();
         } else {
 //            Log.d("DEBUG", "free token!~ markDisappear");
-            freeToken(token);
             mScoreHandler.reset();
             reverseExchange();
+            freeToken(token);
         }
     }
 
@@ -631,13 +639,13 @@ public class GameEngine {
         timeBarTextureId = initTexture(gl, R.drawable.time);
 
         bugTextureId[Configuration.BUG_ID_BLANK] = initTexture(gl, R.drawable.bug_blank);
-        bugTextureId[Configuration.BUG_ID_BLUE] = initTexture(gl, R.drawable.b1);
-        bugTextureId[Configuration.BUG_ID_RED] = initTexture(gl, R.drawable.b2);
-        bugTextureId[Configuration.BUG_ID_YELLOW] = initTexture(gl, R.drawable.b3);
-        bugTextureId[Configuration.BUG_ID_GREEN] = initTexture(gl, R.drawable.b4);
-        bugTextureId[Configuration.BUG_ID_CYAN] = initTexture(gl, R.drawable.b5);
-        bugTextureId[Configuration.BUG_ID_PURPLE] = initTexture(gl, R.drawable.b6);
-        bugTextureId[Configuration.BUG_ID_WHITE] = initTexture(gl, R.drawable.b7);
+        bugTextureId[Configuration.BUG_ID_GREEN] = initTexture(gl, R.drawable.b1);
+        bugTextureId[Configuration.BUG_ID_YELLOW] = initTexture(gl, R.drawable.b2);
+        bugTextureId[Configuration.BUG_ID_RED] = initTexture(gl, R.drawable.b3);
+        bugTextureId[Configuration.BUG_ID_WHITE] = initTexture(gl, R.drawable.b4);
+        bugTextureId[Configuration.BUG_ID_BLUE] = initTexture(gl, R.drawable.b5);
+        bugTextureId[Configuration.BUG_ID_CYAN] = initTexture(gl, R.drawable.b6);
+        bugTextureId[Configuration.BUG_ID_PURPLE] = initTexture(gl, R.drawable.b7);
 
     }
 
@@ -843,7 +851,9 @@ public class GameEngine {
                     genSpecialBugItem();
                     break;
                 case GAME_OVER: {
+                    Log.d("DEBUG", "GAME_OVER");
                     mScoreHandler.setFinalOwnScore(mScoreHandler.getOwnScore());
+                    mScoreHandler.setFinalOwnHealthPoint(mScoreHandler.getOwnHealthPoint());
                     mFinalScore = true;
                     mScene = E_SCENARIO.RESULT;
                     break;
@@ -869,18 +879,26 @@ public class GameEngine {
 
     public void drawResultScene(GL10 gl) {
         String score = "----";
+        String healthPoint = "----";
         String result = "Wait...";
-        int resultColor = Color.BLACK;
+        boolean isWin = false;
+        int resultColor;
         if (MainActivity.mMultiplayer) {
             if (mScoreHandler.getFinalPeerScore() >= 0) {
                 score = Integer.toString(mScoreHandler.getFinalPeerScore());
-                if (mScoreHandler.getFinalPeerScore() > mScoreHandler.getFinalOwnScore()) {
-                    result = "LOSE";
-                    resultColor = Color.GRAY;
-                } else {
-                    result = "WIN!";
-                    resultColor = Color.RED;
+                healthPoint = Integer.toString(mScoreHandler.getFinalPeerHealthPoint());
+                if (mScoreHandler.getFinalOwnHealthPoint() > 0){
+                    if (mScoreHandler.getFinalOwnScore() >= mScoreHandler.getFinalPeerScore()) {
+                        isWin = true;
+                    }
                 }
+            }
+            if (isWin){
+                result = "WIN!";
+                resultColor = Color.RED;
+            } else {
+                result = "LOSE";
+                resultColor = Color.GRAY;
             }
             drawString.draw(gl,
                     result,
@@ -890,32 +908,46 @@ public class GameEngine {
                     resultColor
             );
             drawString.draw(gl,
-                    "OPPONENT:" ,
+                    "Enemy:" ,
                     60,
                     40,
                     -30,
-                    Color.BLACK
+                    Configuration.COLOR_PEER_RESULT
             );
             drawString.draw(gl,
-                    score,
+                    "Score: " + score,
                     60,
                     40,
                     -20,
-                    Color.BLACK
+                    Configuration.COLOR_PEER_RESULT
             );
             drawString.draw(gl,
-                    "YOU:",
+                    "HP: " + healthPoint,
                     60,
                     40,
-                    0,
-                    Color.BLACK
+                    -10,
+                    Configuration.COLOR_PEER_RESULT
             );
             drawString.draw(gl,
-                    Integer.toString(mScoreHandler.getFinalOwnScore()),
+                    "You:",
                     60,
                     40,
                     10,
-                    Color.BLACK
+                    Configuration.COLOR_OWN_RESULT
+            );
+            drawString.draw(gl,
+                    "Score: " +Integer.toString(mScoreHandler.getFinalOwnScore()),
+                    60,
+                    40,
+                    20,
+                    Configuration.COLOR_OWN_RESULT
+            );
+            drawString.draw(gl,
+                    "HP: " +Integer.toString(mScoreHandler.getFinalOwnHealthPoint()),
+                    60,
+                    40,
+                    30,
+                    Configuration.COLOR_OWN_RESULT
             );
         }
         else {
@@ -924,41 +956,76 @@ public class GameEngine {
                     60,
                     40,
                     -10,
-                    Color.BLACK
+                    Configuration.COLOR_OWN_RESULT
             );
             drawString.draw(gl,
                     Integer.toString(mScoreHandler.getFinalOwnScore()),
                     60,
                     40,
                     0,
-                    Color.BLACK
+                    Configuration.COLOR_OWN_RESULT
             );
         }
         drawResultBackGround.draw(gl);
     }
 
     public void drawGameScene(GL10 gl) {
+        int line1Height = -72;
+        int line2Height = -64;
+        int line3Height = -56;
+        int line4Height = -48;
+        int col1Width = 40;
+        int col2Width = 0;
+        int fontSize = 28;
         if (MainActivity.mMultiplayer) {
             drawString.draw(gl,
-                    "Opponent: " + Integer.toString(mScoreHandler.getPeerScore()),
-                    32,
-                    40,
-                    56,
+                    "Enemy:",
+                    fontSize,
+                    col2Width,
+                    line1Height,
+                    Color.BLACK
+            );
+            drawString.draw(gl,
+                    "Score: " + Integer.toString(mScoreHandler.getPeerScore()),
+                    fontSize,
+                    col2Width,
+                    line2Height,
+                    Color.BLACK
+            );
+            drawString.draw(gl,
+                    "HP: " + Integer.toString(mScoreHandler.getPeerHealthPoint()),
+                    fontSize,
+                    col2Width,
+                    line3Height,
+                    Color.BLACK
+            );
+            drawString.draw(gl,
+                    "You:",
+                    fontSize,
+                    col1Width,
+                    line1Height,
                     Color.BLACK
             );
         }
         drawString.draw(gl,
-                "You: " + Integer.toString(mScoreHandler.getOwnScore()),
-                32,
-                40,
-                64,
+                "Score: " + Integer.toString(mScoreHandler.getOwnScore()),
+                fontSize,
+                col1Width,
+                line2Height,
+                Color.BLACK
+        );
+        drawString.draw(gl,
+                "HP: " + Integer.toString(mScoreHandler.getOwnHealthPoint()),
+                fontSize,
+                col1Width,
+                line3Height,
                 Color.BLACK
         );
         drawString.draw(gl,
                 "Time Left: " + Integer.toString(mTimeHandler.getTimeLeft()),
-                32,
-                40,
-                72,
+                fontSize,
+                col1Width,
+                line4Height,
                 Color.BLACK
         );
         drawSingleScore.draw(gl, mSingleScoreW, mSingleScoreH, mScoreHandler.getAward());

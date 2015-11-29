@@ -1,5 +1,6 @@
 package com.francium.app.projectf;
 
+import android.graphics.Color;
 
 public class Configuration {
 
@@ -20,16 +21,25 @@ public class Configuration {
     public static int NUMBER_OF_BUG = 8;
 
     public static int AUTOTIP_DELAY = 5 * 1000 / DELAY_MS;
-    public static int MAX_TIME = 30;
+    public static int MAX_TIME = 3000;
+    public static int MAX_HEALTH_POINT = 10;
+
+    public static int MSG_SIZE = 16;
 
     public static int BUG_ID_BLANK = 0;
-    public static int BUG_ID_BLUE = 1;
-    public static int BUG_ID_RED = 2;
-    public static int BUG_ID_YELLOW = 3;
-    public static int BUG_ID_GREEN = 4;
-    public static int BUG_ID_CYAN = 5;
-    public static int BUG_ID_PURPLE = 6;
-    public static int BUG_ID_WHITE = 7;
+    public static int BUG_ID_GREEN = 1;
+    public static int BUG_ID_YELLOW = 2;
+    public static int BUG_ID_RED = 3;
+    public static int BUG_ID_WHITE = 4;
+    public static int BUG_ID_BLUE = 5;
+    public static int BUG_ID_CYAN = 6;
+    public static int BUG_ID_PURPLE = 7;
+
+    public static int BUG_ID_ATTACK = BUG_ID_RED;
+    public static int BUG_ID_HEAL = BUG_ID_GREEN;
+
+    public static int COLOR_OWN_RESULT = Color.BLACK;
+    public static int COLOR_PEER_RESULT = Color.BLACK;
 
     public enum E_SOUND {
         SLIDE,

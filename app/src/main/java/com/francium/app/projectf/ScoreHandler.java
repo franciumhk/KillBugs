@@ -1,6 +1,7 @@
 package com.francium.app.projectf;
 
 import android.os.Message;
+import android.util.Log;
 
 public class ScoreHandler {
     int mOwnScore = 0;
@@ -9,6 +10,13 @@ public class ScoreHandler {
 
     int mFinalPeerScore = 0;
     int mFinalOwnScore = 0;
+
+    int mOwnHealthPoint = Configuration.MAX_HEALTH_POINT;
+    int mFinalOwnHealthPoint = 0;
+    int mPeerHealthPoint = 0;
+    int mFinalPeerHealthPoint = 0;
+
+    int mAttackPoint = 0;
 
     float mAwardRatio = 0;
     int mContinueCnt = 0;
@@ -22,12 +30,18 @@ public class ScoreHandler {
     }
 
     public void init() {
-        mOwnScore = 0;
-        mPeerScore = 0;
         mAwardScore = 0;
+        mAttackPoint = 0;
 
+        mPeerScore = 0;
         mFinalPeerScore = -1;
+        mFinalPeerHealthPoint = Configuration.MAX_HEALTH_POINT;
+        mPeerHealthPoint = Configuration.MAX_HEALTH_POINT;
+
+        mOwnScore = 0;
         mFinalOwnScore = 0;
+        mFinalOwnHealthPoint = Configuration.MAX_HEALTH_POINT;
+        mOwnHealthPoint = Configuration.MAX_HEALTH_POINT;
 
         mAwardRatio = 0;
         mContinueCnt = 0;
@@ -73,7 +87,7 @@ public class ScoreHandler {
                 }
                 break;
         }
-        awardScore(Math.pow((double)mComboCnt,2) * mAwardRatio * award);
+        awardScore(Math.pow((double) mComboCnt, 2) * mAwardRatio * award);
     }
 
     public void awardScore(double score) {
@@ -82,15 +96,15 @@ public class ScoreHandler {
         isScoreUpdated = true;
     }
 
-    public void setPeerScore(int score){
+    public void setPeerScore(int score) {
         mPeerScore = score;
     }
 
-    public void setOwnScore(int score){
+    public void setOwnScore(int score) {
         mOwnScore = score;
     }
 
-    public int getPeerScore(){
+    public int getPeerScore() {
         return mPeerScore;
     }
 
@@ -98,16 +112,15 @@ public class ScoreHandler {
         return mOwnScore;
     }
 
-
-    public void setFinalPeerScore(int score){
+    public void setFinalPeerScore(int score) {
         mFinalPeerScore = score;
     }
 
-    public void setFinalOwnScore(int score){
+    public void setFinalOwnScore(int score) {
         mFinalOwnScore = score;
     }
 
-    public int getFinalPeerScore(){
+    public int getFinalPeerScore() {
         return mFinalPeerScore;
     }
 
@@ -115,6 +128,62 @@ public class ScoreHandler {
         return mFinalOwnScore;
     }
 
+    public void increaseOwnHealth(int healthPoint) {
+        mOwnHealthPoint += healthPoint;
+        if (mOwnHealthPoint > Configuration.MAX_HEALTH_POINT)
+            mOwnHealthPoint = Configuration.MAX_HEALTH_POINT;
+        Log.d("DEBUG", "increaseOwnHealth: " + mOwnHealthPoint);
+    }
+
+    public void decreaseOwnHealth(int healthPoint) {
+        mOwnHealthPoint -= healthPoint;
+        if (mOwnHealthPoint <= 0) {
+            mOwnHealthPoint = 0;
+            Message msg = new Message();
+            msg.what = GameEngine.GAME_OVER;
+            GameEngine.mHandler.sendMessage(msg);
+        }
+        Log.d("DEBUG", "decreaseOwnHealth: " + mOwnHealthPoint);
+    }
+
+    public void setPeerHealthPoint(int healthPoint) {
+        mPeerHealthPoint = healthPoint;
+    }
+
+    public int getPeerHealthPoint() {
+        return mPeerHealthPoint;
+    }
+
+    public void setFinalPeerHealthPoint(int healthPoint) {
+        mFinalPeerHealthPoint = healthPoint;
+    }
+
+    public int getFinalPeerHealthPoint() {
+        return mFinalPeerHealthPoint;
+    }
+
+    public int getOwnHealthPoint() {
+        return mOwnHealthPoint;
+    }
+
+    public void setFinalOwnHealthPoint(int healthPoint) {
+        mFinalOwnHealthPoint = healthPoint;
+    }
+
+    public int getFinalOwnHealthPoint() {
+        return mFinalOwnHealthPoint;
+    }
+
+    public void increaseAttackPoint(int attackPoint) {
+        mAttackPoint += attackPoint;
+    }
+
+    public int getAttackPoint() {
+        int temp = mAttackPoint;
+        Log.d("DEBUG", "Attack: " + temp);
+        mAttackPoint = 0;
+        return temp;
+    }
     public int getAward() {
         return mAwardScore;
     }
@@ -123,11 +192,11 @@ public class ScoreHandler {
         return mContinueCnt;
     }
 
-    public void resetCombo(){
+    public void resetCombo() {
         mComboCnt = 0;
     }
 
-    public void increaseCombo(){
+    public void increaseCombo() {
         mComboCnt++;
     }
 
@@ -154,7 +223,7 @@ public class ScoreHandler {
                 GameEngine.mHandler.sendMessage(msg);
             }
         }
-        if (mComboCnt > 2){
+        if (mComboCnt > 2) {
             Message msg = new Message();
             msg.what = GameEngine.GEN_SPECIAL_ITEM;
             GameEngine.mHandler.sendMessage(msg);
