@@ -147,7 +147,7 @@ public class GameEngine {
         return data;
     }
 
-    static boolean isInLineX(int pic[][], int col, int row) {
+    public static boolean isInLineX(int pic[][], int col, int row) {
         int picId = pic[col][row];
         if (0 == col) {
             if (picId == pic[col + 1][row] && picId == pic[col + 2][row]) {
@@ -177,7 +177,7 @@ public class GameEngine {
         return false;
     }
 
-    static boolean isInLineY(int pic[][], int col, int row) {
+    public static boolean isInLineY(int pic[][], int col, int row) {
         int picId = pic[col][row];
         if (0 == row) {
             if (picId == pic[col][row + 1] && picId == pic[col][row + 2]) {
@@ -207,7 +207,7 @@ public class GameEngine {
         return false;
     }
 
-    static boolean isInLine(int pic[][], int col, int row) {
+    public static boolean isInLine(int pic[][], int col, int row) {
         return isInLineX(pic, col, row) || isInLineY(pic, col, row);
     }
 
@@ -311,16 +311,25 @@ public class GameEngine {
                     mEffect[i][j] = EFT_DISAPPEAR;
                     mDisappearToken[i][j] = token;
                     markCount++;
-                    if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK){
-                        mScoreHandler.increaseAttackPoint(1);
+                    if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK_1){
+                        mScoreHandler.increaseAttackPoint(Configuration.ATTACK_POWER_1);
                     }
-                    if (mBugItemPic[i][j] == Configuration.BUG_ID_HEAL) {
-                        mScoreHandler.increaseOwnHealth(1);
+                    else if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK_2){
+                        mScoreHandler.increaseAttackPoint(Configuration.ATTACK_POWER_2);
                     }
-                    if (mBugItemPic[i][j] == Configuration.BUG_ID_AWARD) {
+                    else if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK_3){
+                        mScoreHandler.increaseAttackPoint(Configuration.ATTACK_POWER_3);
+                    }
+                    else if (mBugItemPic[i][j] == Configuration.BUG_ID_ATTACK_4){
+                        mScoreHandler.increaseAttackPoint(Configuration.ATTACK_POWER_4);
+                    }
+                    else if (mBugItemPic[i][j] == Configuration.BUG_ID_HEAL) {
+                        mScoreHandler.increaseOwnHealth(Configuration.HEAL_POWER);
+                    }
+                    else if (mBugItemPic[i][j] == Configuration.BUG_ID_AWARD) {
                         mScoreHandler.increaseAwardRatio();
                     }
-                    if (mBugItemPic[i][j] == Configuration.BUG_ID_BONUS) {
+                    else if (mBugItemPic[i][j] == Configuration.BUG_ID_BONUS) {
                         mScoreHandler.increaseBonusCnt();
                     }
                 }
@@ -340,8 +349,7 @@ public class GameEngine {
                 drawDisappear.action.start();
                 drawSingleScore.action.start();
             }
-            mScoreHandler.increaseCombo();
-            mScoreHandler.calcTotal(markCount);
+            mScoreHandler.checkBonus(markCount);
         } else {
 //            Log.d("DEBUG", "free token!~ markDisappear");
             mScoreHandler.reset();
@@ -873,11 +881,11 @@ public class GameEngine {
         String result = "Wait...";
         boolean isWin = false;
         int resultColor = Color.GRAY;
-        if (MainActivity.mMultiplayer) {
-            if ((mScoreHandler.getFinalPeerScore() >= 0)) {
-                if (mScoreHandler.getFinalPeerScore() > 0) {
-                    score = Integer.toString(mScoreHandler.getFinalPeerScore());
-                    healthPoint = Integer.toString(mScoreHandler.getFinalPeerHealthPoint());
+        if (MainActivity.mMultiplayer == true) {
+            if (mScoreHandler.getFinalPeerScore() >= 0) {
+                score = Integer.toString(mScoreHandler.getFinalPeerScore());
+                healthPoint = Integer.toString(mScoreHandler.getFinalPeerHealthPoint());
+                if (mScoreHandler.getFinalPeerHealthPoint() > 0) {
                     if (mScoreHandler.getFinalOwnHealthPoint() > 0) {
                         if (mScoreHandler.getFinalOwnScore() >= mScoreHandler.getFinalPeerScore()) {
                             isWin = true;
@@ -972,7 +980,6 @@ public class GameEngine {
         int col1Width = 40;
         int col2Width = 10;
         int fontSize = 28;
-        drawSingleScore.draw(gl, mSingleScoreW, mSingleScoreH, mScoreHandler.getAward());
         if (MainActivity.mMultiplayer) {
             drawString.draw(gl,
                     "P2 HP: " + Integer.toString(mScoreHandler.getPeerHealthPoint()),
@@ -992,6 +999,13 @@ public class GameEngine {
                     "P1 HP: " + Integer.toString(mScoreHandler.getOwnHealthPoint()),
                     fontSize,
                     col1Width,
+                    topLine1Height,
+                    Configuration.COLOR_OWN_SCORE
+            );
+            drawString.draw(gl,
+                    "Score: " + Integer.toString(mScoreHandler.getOwnScore()),
+                    fontSize,
+                    col2Width,
                     topLine1Height,
                     Configuration.COLOR_OWN_SCORE
             );
@@ -1026,6 +1040,7 @@ public class GameEngine {
                         break;
                     case EFT_FILL:
                         drawFill.draw(gl, getPicId(i, j), i, j);
+                        drawSingleScore.draw(gl, mSingleScoreW, mSingleScoreH, mScoreHandler.getAward());
                         break;
                     case EFT_AUTOTIP:
                         drawAutoTip.draw(gl, i, j);

@@ -856,6 +856,8 @@ public class MainActivity extends Activity
             // if it's a final score, mark this participant as having finished
             // the game
             if ((char) buf[0] == 'F') {
+                Log.d(TAG, "Final Result Got");
+                Log.d(TAG, "received Msg:" + bytesToHex(buf));
                 //Score
                 arraycopy(buf, 1, tmp, 0, 4);
                 tmpValue = byteArrayToLeInt(tmp);
@@ -907,6 +909,11 @@ public class MainActivity extends Activity
         mOwnHealthPoint = GameEngine.mScoreHandler.getFinalOwnHealthPoint();
         mAttackPoint = GameEngine.mScoreHandler.getAttackPoint();
 
+        Log.d(TAG, "mOwnScore:" + mOwnScore);
+        Log.d(TAG, "mOwnHealthPoint:" + mOwnHealthPoint);
+        Log.d(TAG, "mAttackPoint:" + mAttackPoint);
+        Log.d(TAG, "Final Result Sent");
+
         constructBroadcastPacket();
         broadcast();
     }
@@ -919,6 +926,8 @@ public class MainActivity extends Activity
         arraycopy(tmp, 0, mMsgBuf, 5, 4);
         tmp = leIntToByteArray(mAttackPoint);
         arraycopy(tmp, 0, mMsgBuf, 9, 4);
+
+        Log.d(TAG, "send Msg:" + bytesToHex(mMsgBuf));
     }
 
     void broadcast(){

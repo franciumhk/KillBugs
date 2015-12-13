@@ -25,9 +25,15 @@ public class Configuration {
     public static int MAX_TIME = 0;
     public static int MAX_TIME_SINGLE_PLAYER = 30;
     public static int MAX_TIME_MULTIPLAYER = 180;
-    public static int MAX_HEALTH_POINT = 10;
-    public static int MAX_AWARD_RATIO = 5;
+    public static int MAX_AWARD_RATIO = 3 * 3;
+    public static int MAX_SUCCESSFUL_COUNT = 3 * 3;
     public static int MAX_SINGLE_SCORE = 1000;
+    public static int MAX_HEALTH_POINT = 100;
+    public static int ATTACK_POWER_1 = 8;
+    public static int ATTACK_POWER_2 = 5;
+    public static int ATTACK_POWER_3 = 3;
+    public static int ATTACK_POWER_4 = 1;
+    public static int HEAL_POWER = 3;
 
     public static int ACHIEVEMENT_LEVEL_1_SCORE = 5000;
     public static int ACHIEVEMENT_LEVEL_2_SCORE = 10000;
@@ -47,7 +53,10 @@ public class Configuration {
     public static int BUG_ID_CYAN = 6;
     public static int BUG_ID_PURPLE = 7;
 
-    public static int BUG_ID_ATTACK = BUG_ID_RED;
+    public static int BUG_ID_ATTACK_1 = BUG_ID_RED;
+    public static int BUG_ID_ATTACK_2 = BUG_ID_CYAN;
+    public static int BUG_ID_ATTACK_3 = BUG_ID_BLUE;
+    public static int BUG_ID_ATTACK_4 = BUG_ID_WHITE;
     public static int BUG_ID_HEAL = BUG_ID_GREEN;
     public static int BUG_ID_AWARD = BUG_ID_YELLOW;
     public static int BUG_ID_BONUS = BUG_ID_PURPLE;

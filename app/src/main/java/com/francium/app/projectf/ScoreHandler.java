@@ -20,6 +20,7 @@ public class ScoreHandler {
     float mAwardRatio = 0;
     float mBonusCnt = 0;
     int mComboCnt = 0;
+    int mSuccessCnt = 0;
 
     int mOver3 = 0;
     public static boolean isScoreUpdated = false;
@@ -46,46 +47,40 @@ public class ScoreHandler {
         mBonusCnt = 0;
         mComboCnt = 0;
         mOver3 = 0;
+        mSuccessCnt = 0;
     }
 
     public void award(int clearNum) {
         int award = 0;
-//        Log.d("DEBUG", "clearNum: " + clearNum);
+//        Log.d("ScoreDEBUG", "clearNum: " + clearNum);
         switch (clearNum) {
             case 3:
                 award = 1;
                 break;
             case 4:
-                award = 5;
+                award = 2;
                 break;
             case 5:
-                award = 10;
+                award = 3;
                 break;
             case 6:
-                award = 20;
-                break;
-            case 7:
-                award = 40;
-                break;
-            case 8:
-                award = 80;
-                break;
-            case 9:
-                award = 160;
-                break;
-            case 10:
-                award = 320;
-                break;
-            case 11:
-                award = 640;
+                award = 4;
                 break;
             default:
-                if (clearNum > 11) {
-                    award = 640 * clearNum;
+                if (clearNum > 6) {
+                    award = 4;
                 }
+                else
+                    award = 0;
                 break;
         }
-        awardScore((mComboCnt + 1) * (mAwardRatio + 1) * award);
+//        Log.d("ScoreDEBUG", "mComboCnt:" + mComboCnt + " mAwardRatio: " + mAwardRatio + " mSuccessCnt: " + mSuccessCnt + " award: " + award);
+        awardScore(mComboCnt * ((mAwardRatio + 3) / 3) * ((mSuccessCnt + 3) / 3) * award);
+        if (clearNum >= 3) {
+            mSuccessCnt++;
+            if (mSuccessCnt > Configuration.MAX_SUCCESSFUL_COUNT)
+                mSuccessCnt = Configuration.MAX_SUCCESSFUL_COUNT;
+        }
     }
 
     public void awardScore(double score) {
@@ -94,6 +89,7 @@ public class ScoreHandler {
         mAwardScore = (int) score;
         mOwnScore += (int) score;
         isScoreUpdated = true;
+//        Log.d("ScoreDEBUG", "Total Score:" + mOwnScore + " Unit Score: " + score);
     }
 
     public void increaseAwardRatio() {
@@ -144,6 +140,7 @@ public class ScoreHandler {
         mOwnHealthPoint -= healthPoint;
         if (mOwnHealthPoint <= 0) {
             mOwnHealthPoint = 0;
+            mFinalOwnScore = mOwnScore;
             Message msg = new Message();
             msg.what = GameEngine.GAME_OVER;
             GameEngine.mHandler.sendMessage(msg);
@@ -204,24 +201,26 @@ public class ScoreHandler {
         mAwardRatio = 0;
         mComboCnt = 0;
         mBonusCnt = 0;
+        mSuccessCnt = 0;
+//        Log.d("ScoreDEBUG", "reset score");
     }
 
     public void increaseBonusCnt(){
         mBonusCnt++;
     }
 
-    public void calcTotal(int clearNum) {
+    public void checkBonus(int clearNum) {
         boolean giveSpecialItem = false;
         //Clear enough item
         if (clearNum > 3) {
             mOver3++;
-            if (0 == (mOver3 % Configuration.AWARD_MAX_COUNT)) {
+            if ((mOver3 % Configuration.AWARD_MAX_COUNT) == 0) {
                 giveSpecialItem = true;
             }
         }
+        increaseCombo();
         // 3 or more combo
-        if (mComboCnt > 2) {
-            mComboCnt = 0;
+        if (mComboCnt % 3 == 0) {
             giveSpecialItem = true;
         }
         // Bonus
@@ -231,10 +230,15 @@ public class ScoreHandler {
         }
 
         if(giveSpecialItem == true) {
-            Message msg = new Message();
-            msg.what = GameEngine.GEN_SPECIAL_ITEM;
-            GameEngine.mHandler.sendMessage(msg);
+            generateBonus();
         }
+    }
+
+    public void generateBonus() {
+        Message msg = new Message();
+        msg.what = GameEngine.GEN_SPECIAL_ITEM;
+        GameEngine.mHandler.sendMessage(msg);
+//        Log.d("ScoreDEBUG", "generateBonus = "+ "clearNum:" + clearNum + " mOver3: " + mOver3 + " mBonusCnt: " + mBonusCnt + " mComboCnt: " + mComboCnt);
     }
 
 }
